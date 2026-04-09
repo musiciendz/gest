@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>إدارة المؤسسة التربوية - النسخة الشاملة</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+:root {
+    --primary-color: #0d6efd; 
+    --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0046b8 100%);
+    --dark-text: #222;
+    --light-bg: #f4f7f6;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark-text);
+    margin: 0;
+    padding-bottom: 30px;
+}
+
+header {
+    background: var(--white);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    position: sticky; top: 0; z-index: 100;
+    padding-top: env(safe-area-inset-top); 
+    border-bottom: 3px solid var(--primary-color);
+}
+
+.top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+.logo-container { display: flex; align-items: center; gap: 10px; }
+.logo-img { max-height: 45px; border-radius: 5px; }
+.logo-text { color: var(--primary-color); font-size: 20px; font-weight: 900; }
+
+.nav-buttons { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding: 10px; background: var(--white); }
+.nav-buttons button { background: var(--white); color: #555; border: 1px solid #ddd; padding: 8px 10px; font-size: 13px; font-weight: 700; border-radius: 8px; flex: 1 1 auto; font-family: 'Cairo'; cursor: pointer; }
+.nav-buttons button.active-nav { background: #e7f1ff; color: var(--primary-color); border-color: var(--primary-color); }
+
+.section { display: none; padding: 20px 15px; max-width: 650px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+h2 { color: var(--primary-color); font-size: 18px; font-weight: 800; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-bottom: 15px; display: inline-block; }
+
+.form-section { background: var(--white); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; border-right: 5px solid var(--primary-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+.form-section h3 { margin-top: 0; color: #444; font-size: 15px; border-bottom: 1px dashed #ddd; padding-bottom: 8px; margin-bottom: 15px; }
+
+.input-label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: bold; }
+.required-star { color: red; }
+input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo'; font-size: 14px; box-sizing: border-box; }
+
+.photo-upload-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 12px; border: 2px dashed #ccc; }
+#photoPreview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid var(--primary-color); display: none; }
+.photo-placeholder { width: 100px; height: 100px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; }
+
+.main-btn { 
+    background: var(--primary-gradient); color: var(--white); width: 100%; padding: 16px; border: none; border-radius: 12px; 
+    cursor: pointer; font-weight: 800; font-size: 18px; box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3); transition: 0.2s;
+}
+.main-btn:active { transform: scale(0.97); }
+
+.card { background: var(--white); padding: 12px; margin-bottom: 12px; border-radius: 12px; border-right: 5px solid var(--primary-color); display: flex; align-items: center; gap: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
+.card-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
+
+.pickup-row, .doc-row { display: flex; gap: 8px; margin-bottom: 10px; background: #fdfdfd; padding: 10px; border-radius: 8px; border: 1px solid #eee; position: relative; }
+
+#profileModal, #imageModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
+#profileContent { background: #fff; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 15px; padding: 20px; position: relative; }
+
+.badge { padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; color: white; }
+</style>
+</head>
+<body>
+
+<div id="imageModal" onclick="this.style.display='none'">
+    <div style="max-width: 90%; max-height: 80%; background: #fff; padding: 5px; border-radius: 10px;">
+        <img id="fullImage" src="" style="width: 100%; border-radius: 8px;">
+        <p style="text-align: center; margin: 10px 0; font-weight: bold; color: #333;">إضغط في أي مكان للإغلاق</p>
+    </div>
+</div>
+
+<div id="profileModal">
+    <div id="profileContent">
+        <div id="profileData"></div>
+        <button onclick="document.getElementById('profileModal').style.display='none'" class="main-btn" style="background: #dc3545; margin-top: 15px;">❌ إغلاق الملف</button>
+    </div>
+</div>
+
+<header>
+    <div class="top-bar">
+        <div id="live-clock" style="font-weight: 800; color: #555;"></div>
+        <div class="logo-container">
+            <img id="headerLogo" class="logo-img" style="display:none;">
+            <div id="headerText" class="logo-text">إدارة المؤسسة</div>
+        </div>
+    </div>
+    <div class="nav-buttons">
+        <button onclick="show('home', this)" class="active-nav">🏠 الرئيسية</button>
+        <button onclick="show('registration', this)">📝 ترسيم جديد</button>
+        <button onclick="show('finance', this)">💰 المالية</button>
+        <button onclick="show('settings', this)">⚙️ الإعدادات</button>
+    </div>
+</header>
+
+<div id="home" class="section active">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+        <div style="background: #fff; padding: 15px; border-radius: 10px; text-align: center; border-bottom: 4px solid var(--primary-color);">
+            <div style="font-size: 12px; color: #888;">التلاميذ</div>
+            <div id="stat-count" style="font-size: 22px; font-weight: 900;">0</div>
+        </div>
+        <div style="background: #fff; padding: 15px; border-radius: 10px; text-align: center; border-bottom: 4px solid #198754;">
+            <div style="font-size: 12px; color: #888;">المداخيل</div>
+            <div id="stat-money" style="font-size: 22px; font-weight: 900;">0 د.ت</div>
+        </div>
+    </div>
+    <h2>قائمة التلاميذ</h2>
+    <div id="studentsList"></div>
+</div>
+
+<div id="registration" class="section">
+    <h2>📝 ترسيم تلميذ جديد</h2>
+    
+    <div class="photo-upload-container">
+        <div id="photoPlaceholder" class="photo-placeholder">👤</div>
+        <img id="photoPreview" src="">
+        <input type="file" id="cPhoto" accept="image/*" onchange="previewImg(event)" style="display:none;">
+        <button class="action-btn btn-outline" onclick="document.getElementById('cPhoto').click()">📸 اختر صورة الطفل</button>
+    </div>
+
+    <div class="form-section">
+        <h3>🔹 1. الهوية</h3>
+        <input type="text" id="cName" placeholder="الإسم واللقب للطفل *">
+        <label class="input-label">تاريخ الولادة *</label>
+        <input type="date" id="cDOB">
+        <select id="cGender">
+            <option value="" disabled selected>-- اختر الجنس * --</option>
+            <option value="ذكر">ذكر</option>
+            <option value="أنثى">أنثى</option>
+        </select>
+    </div>
+
+    <div class="form-section">
+        <h3>🔹 2. الأبوين والمسؤولية</h3>
+        <div class="parent-block">
+            <label style="color:var(--primary-color); font-weight:bold;"><input type="checkbox" id="fDead" onchange="toggleP('f')"> الأب متوفى</label>
+            <div id="fFields">
+                <input type="text" id="fName" placeholder="اسم الأب">
+                <input type="tel" id="fPhone" placeholder="هاتف الأب">
+            </div>
+        </div>
+        <div class="parent-block">
+            <label style="color:#e83e8c; font-weight:bold;"><input type="checkbox" id="mDead" onchange="toggleP('m')"> الأم متوفاة</label>
+            <div id="mFields">
+                <input type="text" id="mName" placeholder="اسم الأم">
+                <input type="tel" id="mPhone" placeholder="هاتف الأم">
+            </div>
+        </div>
+        <label class="input-label">من هو الولي المسؤول؟ *</label>
+        <select id="pLegal"><option value="الأب">الأب</option><option value="الأم">الأم</option></select>
+    </div>
+
+    <div class="form-section">
+        <h3>🔹 3. نظام الحضور والوجبات</h3>
+        <div style="display:flex; gap:10px;">
+            <select id="regAttendance" style="flex:1;"><option>يوم كامل</option><option>نصف يوم</option></select>
+            <select id="regMeals" style="flex:1;"><option>وجبات الروضة</option><option>وجبات من المنزل</option></select>
+        </div>
+        <select id="regClass"><option value="" disabled selected>-- القسم * --</option><option>حضانة</option><option>روضة أ</option><option>روضة ب</option><option>تحضيري</option></select>
+    </div>
+
+    <div class="form-section">
+        <h3>🔹 4. النقل (اختياري)</h3>
+        <select id="regTrans" onchange="document.getElementById('transFields').style.display=(this.value==='نعم'?'block':'none')">
+            <option value="لا">لا يوجد نقل</option>
+            <option value="نعم">نعم (مشترك في الحافلة)</option>
+        </select>
+        <div id="transFields" style="display:none;">
+            <input type="text" id="transRoute" placeholder="المسار / العنوان">
+            <input type="number" id="transFee" placeholder="معلوم النقل الشهري">
+            <input type="text" id="transDriver" placeholder="اسم السائق ورقمه">
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h3>🔹 5. المسموح لهم بالاصطحاب</h3>
+        <div id="pickupBox">
+            <div class="pickup-row">
+                <input type="text" class="pName" placeholder="الإسم">
+                <input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;">
+            </div>
+        </div>
+        <button class="action-btn btn-outline" style="width:100%;" onclick="addPickup()">➕ إضافة شخص</button>
+    </div>
+
+    <div class="form-section">
+        <h3>🔹 6. الوثائق المستلمة</h3>
+        <div id="regDocsBox"></div>
+    </div>
+
+    <div class="form-section">
+        <h3>🔹 7. المالية وحقوق الصورة</h3>
+        <select id="regPaySys"><option value="شهري">شهري</option><option value="ثلاثي">ثلاثي</option><option value="مجاني">حالة اجتماعية</option></select>
+        <input type="number" id="regFee" placeholder="المعلوم الشهري المتفق عليه *">
+        
+        <div style="background:#f0f7ff; padding:10px; border-radius:8px; border:1px solid #cce5ff;">
+            <label style="font-weight:bold; cursor:pointer;"><input type="checkbox" id="cImageRights" checked> موافقة الولي على حقوق الصورة</label>
+            <p style="font-size:11px; color:#555; margin:5px 0 0 0;">(سيتم توليد عقد رسمي للطباعة في حال الموافقة)</p>
+        </div>
+    </div>
+
+    <button class="main-btn" onclick="saveStudent()">💾 حفظ وحفظ التلميذ</button>
+</div>
+
+<div id="settings" class="section">
+    <h2>⚙️ الإعدادات العامة</h2>
+    <div class="form-section">
+        <h3>بيانات المؤسسة</h3>
+        <input type="text" id="setInstName" placeholder="اسم المؤسسة">
+        <input type="text" id="setInstAddr" placeholder="العنوان الكامل">
+        <input type="file" id="setLogo" onchange="uploadLogo(event)">
+    </div>
+    <div class="form-section">
+        <h3>إدارة الوثائق المطلوبة</h3>
+        <div id="docsManagerBox"></div>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="newDocName" placeholder="اسم وثيقة جديدة" style="margin:0;">
+            <button class="action-btn btn-outline" onclick="addDocType()">➕</button>
+        </div>
+    </div>
+    <div class="form-section">
+        <h3>الألوان</h3>
+        <input type="color" id="setPrimaryColor">
+    </div>
+    <button class="main-btn" onclick="saveSettings()">💾 حفظ الإعدادات</button>
+    <button class="action-btn btn-red" style="width:100%; margin-top:15px;" onclick="exportData()">⬇️ نسخة احتياطية</button>
+</div>
+
+<script>
+let students = JSON.parse(localStorage.getItem('h_studs') || '[]');
+let settings = JSON.parse(localStorage.getItem('h_sets') || '{"docs":["مضمون ولادة","دفتر تلاقيح","شهادة طبية"],"primaryColor":"#0d6efd"}');
+let payments = JSON.parse(localStorage.getItem('h_pays') || '[]');
+
+function applySets() {
+    document.documentElement.style.setProperty('--primary-color', settings.primaryColor);
+    document.getElementById('headerText').innerText = settings.instName || "إدارة المؤسسة";
+    if(settings.logo) {
+        document.getElementById('headerLogo').src = settings.logo;
+        document.getElementById('headerLogo').style.display = 'block';
+        document.getElementById('headerText').style.display = 'none';
+    }
+    renderDocs();
+}
+
+function renderDocs() {
+    let box = document.getElementById('docsManagerBox');
+    let regBox = document.getElementById('regDocsBox');
+    box.innerHTML = ''; regBox.innerHTML = '';
+    settings.docs.forEach((d, i) => {
+        box.innerHTML += `<div class="doc-row">${d} <button onclick="delDoc(${i})" style="color:red; background:none; border:none; margin-right:auto;">🗑</button></div>`;
+        regBox.innerHTML += `<label><input type="checkbox" class="doc-check" value="${d}"> ${d}</label><br>`;
+    });
+}
+
+function addDocType() {
+    let val = document.getElementById('newDocName').value;
+    if(val) { settings.docs.push(val); document.getElementById('newDocName').value=''; renderDocs(); }
+}
+function delDoc(i) { settings.docs.splice(i,1); renderDocs(); }
+
+function previewImg(e) {
+    let reader = new FileReader();
+    reader.onload = () => {
+        document.getElementById('photoPreview').src = reader.result;
+        document.getElementById('photoPreview').style.display = 'block';
+        document.getElementById('photoPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(e.target.files[0]);
+}
+
+function toggleP(t) { document.getElementById(t+'Fields').style.display = document.getElementById(t+'Dead').checked ? 'none' : 'block'; }
+function addPickup() {
+    let div = document.createElement('div'); div.className = 'pickup-row';
+    div.innerHTML = `<input type="text" class="pName" placeholder="الإسم"><input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none;">X</button>`;
+    document.getElementById('pickupBox').appendChild(div);
+}
+
+function saveStudent() {
+    let name = document.getElementById('cName').value.trim();
+    let dob = document.getElementById('cDOB').value;
+    let gen = document.getElementById('cGender').value;
+    let fee = document.getElementById('regFee').value;
+    let pLegal = document.getElementById('pLegal').value;
+    let fDead = document.getElementById('fDead').checked;
+    let mDead = document.getElementById('mDead').checked;
+    let today = new Date().toISOString().split('T')[0];
+
+    if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("البيانات الأساسية ناقصة!");
+    if(dob >= today) return alert("تاريخ الولادة يجب أن يكون في الماضي!");
+    if((pLegal==='الأب' && fDead) || (pLegal==='الأم' && mDead)) return alert("لا يمكن اختيار ولي متوفى كمسؤول!");
+    if(document.getElementById('regPaySys').value !== 'مجاني' && fee <= 0) return alert("يجب إدخال معلوم مالي!");
+
+    let pickup = [];
+    document.querySelectorAll('.pickup-row').forEach(r => { if(r.querySelector('.pName').value) pickup.push({n:r.querySelector('.pName').value, p:r.querySelector('.pPhone').value}); });
+    
+    let docsReceived = [];
+    document.querySelectorAll('.doc-check:checked').forEach(c => docsReceived.push(c.value));
+
+    let s = {
+        id: Date.now(), name, dob, gen,
+        photo: document.getElementById('photoPreview').src || null,
+        f: { d: fDead, n: document.getElementById('fName').value, p: document.getElementById('fPhone').value },
+        m: { d: mDead, n: document.getElementById('mName').value, p: document.getElementById('mPhone').value },
+        legal: pLegal,
+        life: { meals: document.getElementById('regMeals').value, att: document.getElementById('regAttendance').value, cls: document.getElementById('regClass').value },
+        trans: { active: document.getElementById('regTrans').value==='نعم', route: document.getElementById('transRoute').value, fee: parseFloat(document.getElementById('transFee').value)||0, driver: document.getElementById('transDriver').value },
+        fin: { sys: document.getElementById('regPaySys').value, fee: parseFloat(fee), day: document.getElementById('regPayDay').value },
+        rights: document.getElementById('cImageRights').checked,
+        docs: docsReceived
+    };
+
+    students.push(s);
+    localStorage.setItem('h_studs', JSON.stringify(students));
+    alert("تم الحفظ!"); location.reload();
+}
+
+function viewProfile(id) {
+    let s = students.find(x => x.id === id);
+    let p = s.legal === 'الأب' ? s.f : s.m;
+    let photoHtml = s.photo ? `<img src="${s.photo}" style="width:100px; height:100px; border-radius:50%; cursor:pointer;" onclick="zoomImg('${s.photo}')">` : `<div style="width:100px; height:100px; border-radius:50%; background:#ddd; line-height:100px; font-size:40px;">👤</div>`;
+    
+    let html = `
+        <div style="text-align:center; margin-bottom:15px;">${photoHtml}<h3>${s.name}</h3></div>
+        <div style="font-size:13px; line-height:1.6; background:#f9f9f9; padding:15px; border-radius:10px;">
+            <b>القسم:</b> ${s.life.cls} | <b>الجنس:</b> ${s.gen}<br>
+            <b>الولي:</b> ${p.n} (<a href="tel:${p.p}">${p.p}</a>)<br>
+            <b>النظام:</b> ${s.life.att} | <b>الوجبات:</b> ${s.life.meals}<br>
+            <hr>
+            <b>النقل:</b> ${s.trans.active ? `✅ ${s.trans.route} (${s.trans.fee} د.ت)` : '❌ لا يوجد'}<br>
+            <b>الاصطحاب:</b> ${s.pickup.length > 0 ? s.pickup.map(x=>x.n).join(', ') : 'الأبوين فقط'}<br>
+            <hr>
+            <b>الوثائق الناقصة:</b> ${settings.docs.filter(d => !s.docs.includes(d)).join(', ') || '✅ كاملة'}<br>
+            <hr>
+            ${s.rights ? `<button class="action-btn btn-outline" style="width:100%;" onclick="printContract(${s.id})">🖨️ طباعة ترخيص الصورة</button>` : ''}
+            <button class="action-btn btn-red" style="width:100%; margin-top:10px;" onclick="delStu(${s.id})">🗑 حذف التلميذ</button>
+        </div>
+    `;
+    document.getElementById('profileData').innerHTML = html;
+    document.getElementById('profileModal').style.display = 'flex';
+}
+
+function zoomImg(src) { document.getElementById('fullImage').src = src; document.getElementById('imageModal').style.display = 'flex'; }
+function delStu(id) { if(confirm("حذف نهائي؟")) { students = students.filter(x=>x.id!==id); localStorage.setItem('h_studs', JSON.stringify(students)); location.reload(); } }
+
+function printContract(id) {
+    let s = students.find(x => x.id === id);
+    let p = s.legal === 'الأب' ? s.f : s.m;
+    let div = document.createElement('div');
+    div.style.cssText = "position:absolute; top:0; left:0; width:550px; padding:40px; background:#fff; direction:rtl; font-family:Cairo; border:2px solid #333; z-index:-1;";
+    div.innerHTML = `
+        <h2 style="text-align:center;">ترخيص أبوي في حق الصورة</h2>
+        <p>إني الممضي(ة) أسفله السيد(ة): <b>${p.n}</b>، بصفتي الولي الشرعي للطفل(ة): <b>${s.name}</b>.</p>
+        <p>أرخص صراحة للمؤسسة التربوية: <b>"${settings.instName || 'مؤسستنا'}"</b>، الكائن مقرها بـ: <b>${settings.instAddr || '.......'}</b>، بالتقاط صور وفيديوهات لابني/ابنتي خلال الأنشطة ونشرها في الوسائط الرسمية للمؤسسة.</p>
+        <div style="margin-top:50px; display:flex; justify-content:space-between;">
+            <span>حرر في: ${new Date().toLocaleDateString('ar-TN')}</span>
+            <span>إمضاء الولي: ....................</span>
+        </div>
+    `;
+    document.body.appendChild(div);
+    html2canvas(div).then(canvas => { zoomImg(canvas.toDataURL()); div.remove(); });
+}
+
+function saveSettings() {
+    settings.instName = document.getElementById('setInstName').value;
+    settings.instAddr = document.getElementById('setInstAddr').value;
+    settings.primaryColor = document.getElementById('setPrimaryColor').value;
+    localStorage.setItem('h_sets', JSON.stringify(settings));
+    applySets(); alert("تم الحفظ!");
+}
+
+function uploadLogo(e) {
+    let reader = new FileReader();
+    reader.onload = () => { settings.logo = reader.result; };
+    reader.readAsDataURL(e.target.files[0]);
+}
+
+function show(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav-buttons button').forEach(b => b.classList.remove('active-nav'));
+    btn.classList.add('active-nav');
+    render();
+}
+
+function render() {
+    let list = document.getElementById('studentsList');
+    let fSel = document.getElementById('finStudentSelect');
+    if(!list) return;
+    list.innerHTML = ''; fSel.innerHTML = '<option disabled selected>-- اختر التلميذ --</option>';
+    document.getElementById('stat-count').innerText = students.length;
+    
+    students.forEach(s => {
+        fSel.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+        list.innerHTML += `
+            <div class="card" onclick="viewProfile(${s.id})">
+                ${s.photo ? `<img src="${s.photo}" class="card-img">` : `<div class="card-img" style="background:#eee; text-align:center; line-height:50px; font-size:20px;">👤</div>`}
+                <div style="flex:1;">
+                    <div style="font-weight:bold; color:var(--primary-color);">${s.name}</div>
+                    <div style="font-size:11px; color:#888;">${s.life.cls} | ${s.life.att}</div>
+                </div>
+                <div class="badge" style="background:#198754;">نشط</div>
+            </div>
+        `;
+    });
+}
+
+setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('ar-TN'); }, 1000);
+window.onload = () => {
+    applySets();
+    document.getElementById('setInstName').value = settings.instName || '';
+    document.getElementById('setInstAddr').value = settings.instAddr || '';
+    document.getElementById('setPrimaryColor').value = settings.primaryColor;
+    render();
+};
+
+function exportData() { window.location.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({students, settings})); }
+</script>
+</body>
+</html>
