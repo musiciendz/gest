@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>إدارة المؤسسة التربوية - النسخة الشاملة</title>
+<title>إدارة روضة P'tit Ange</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,86 +14,136 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
+/* 🎨 لوحة الألوان الطفولية والمرحة */
 :root {
-    --primary-color: #0d6efd; 
-    --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0046b8 100%);
-    --dark-text: #222;
-    --light-bg: #f4f7f6;
+    --primary-color: #FF9800; /* برتقالي مرح */
+    --secondary-color: #00BCD4; /* أزرق سماوي */
+    --accent-color: #FF5252; /* وردي/أحمر خفيف */
+    --success-color: #8BC34A; /* أخضر تفاحي */
+    --light-bg: #F4FAFF; /* أزرق فاتح جداً للخلفية */
     --white: #ffffff;
+    --dark-text: #444;
 }
 
 body {
     font-family: 'Cairo', sans-serif;
     background-color: var(--light-bg);
+    /* خلفية منقطة خفيفة جداً تعطي طابع طفولي */
+    background-image: radial-gradient(#d4e8f9 2px, transparent 2px);
+    background-size: 30px 30px;
     color: var(--dark-text);
     margin: 0;
-    padding-bottom: 30px;
+    padding-bottom: 40px;
 }
 
+/* 🎈 تصميم الهيدر (رأس الصفحة) */
 header {
     background: var(--white);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 15px rgba(0,188,212,0.1);
     position: sticky; top: 0; z-index: 100;
     padding-top: env(safe-area-inset-top); 
-    border-bottom: 3px solid var(--primary-color);
+    border-bottom: 4px dashed var(--secondary-color);
+    border-radius: 0 0 25px 25px; /* حواف سفلية دائرية */
+    margin-bottom: 15px;
 }
 
 .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
-.logo-container { display: flex; align-items: center; gap: 10px; }
-.logo-img { max-height: 45px; border-radius: 5px; }
-.logo-text { color: var(--primary-color); font-size: 20px; font-weight: 900; }
+.logo-container { display: flex; align-items: center; gap: 12px; }
+.logo-img { max-height: 55px; border-radius: 50%; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; object-fit: contain; }
+.logo-text { color: var(--secondary-color); font-size: 22px; font-weight: 900; letter-spacing: 1px; }
 
-.nav-buttons { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding: 10px; background: var(--white); }
-.nav-buttons button { background: var(--white); color: #555; border: 1px solid #ddd; padding: 8px 10px; font-size: 13px; font-weight: 700; border-radius: 8px; flex: 1 1 auto; font-family: 'Cairo'; cursor: pointer; }
-.nav-buttons button.active-nav { background: #e7f1ff; color: var(--primary-color); border-color: var(--primary-color); }
-
-.section { display: none; padding: 20px 15px; max-width: 650px; margin: 0 auto; animation: fadeIn 0.3s ease; }
-.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-h2 { color: var(--primary-color); font-size: 18px; font-weight: 800; border-bottom: 2px solid var(--primary-color); padding-bottom: 5px; margin-bottom: 15px; display: inline-block; }
-
-.form-section { background: var(--white); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #eee; border-right: 5px solid var(--primary-color); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-.form-section h3 { margin-top: 0; color: #444; font-size: 15px; border-bottom: 1px dashed #ddd; padding-bottom: 8px; margin-bottom: 15px; }
-
-.input-label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; font-weight: bold; }
-.required-star { color: red; }
-input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo'; font-size: 14px; box-sizing: border-box; }
-
-.photo-upload-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 12px; border: 2px dashed #ccc; }
-#photoPreview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid var(--primary-color); display: none; }
-.photo-placeholder { width: 100px; height: 100px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px; }
-
-.main-btn { 
-    background: var(--primary-gradient); color: var(--white); width: 100%; padding: 16px; border: none; border-radius: 12px; 
-    cursor: pointer; font-weight: 800; font-size: 18px; box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3); transition: 0.2s;
+/* 🌟 أزرار التنقل (على شكل فقاعات) */
+.nav-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px 15px 15px; }
+.nav-buttons button { 
+    background: var(--light-bg); color: #666; border: 2px solid #e0f0ff; 
+    padding: 10px 15px; font-size: 14px; font-weight: 800; 
+    border-radius: 25px; flex: 1 1 auto; font-family: 'Cairo'; 
+    cursor: pointer; transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-.main-btn:active { transform: scale(0.97); }
+.nav-buttons button.active-nav { 
+    background: var(--primary-color); color: var(--white); 
+    border-color: var(--primary-color); 
+    transform: scale(1.05); box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3); 
+}
 
-.card { background: var(--white); padding: 12px; margin-bottom: 12px; border-radius: 12px; border-right: 5px solid var(--primary-color); display: flex; align-items: center; gap: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.05); }
-.card-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
+.section { display: none; padding: 10px 15px; max-width: 650px; margin: 0 auto; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.active { display: block; }
 
-.pickup-row, .doc-row { display: flex; gap: 8px; margin-bottom: 10px; background: #fdfdfd; padding: 10px; border-radius: 8px; border: 1px solid #eee; position: relative; }
+/* تأثير الدخول النطّاط (Bouncy) */
+@keyframes popIn { 
+    from { opacity: 0; transform: translateY(20px) scale(0.95); } 
+    to { opacity: 1; transform: translateY(0) scale(1); } 
+}
 
-#profileModal, #imageModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
-#profileContent { background: #fff; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 15px; padding: 20px; position: relative; }
+h2 { color: var(--secondary-color); font-size: 20px; font-weight: 900; border-bottom: 3px dotted var(--secondary-color); padding-bottom: 8px; margin-bottom: 20px; display: inline-block; }
 
-.badge { padding: 3px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; color: white; }
+/* 📦 البطاقات والخانات */
+.form-section { 
+    background: var(--white); padding: 20px; border-radius: 20px; 
+    margin-bottom: 20px; border: 3px solid #eef5fb; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative;
+}
+.form-section h3 { margin-top: 0; color: var(--primary-color); font-size: 16px; font-weight: 900; border-bottom: 2px dashed #ffe0b2; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
-/* أزرار نافذة ملف التلميذ */
-.modal-actions-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
-.btn-modal { width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; font-family: 'Cairo'; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.input-label { display: block; font-size: 14px; color: #555; margin-bottom: 8px; font-weight: 800; }
+input, select, textarea { 
+    width: 100%; padding: 14px; margin-bottom: 15px; 
+    border-radius: 15px; border: 2px solid #e0e0e0; 
+    font-family: 'Cairo'; font-size: 15px; font-weight: 600; 
+    box-sizing: border-box; transition: 0.3s; background: #fafafa;
+}
+input:focus, select:focus { border-color: var(--secondary-color); background: var(--white); outline: none; box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1); }
+
+.photo-upload-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; background: var(--white); padding: 20px; border-radius: 20px; border: 3px dashed #bbdefb; }
+#photoPreview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 4px solid var(--primary-color); display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.photo-placeholder { width: 120px; height: 120px; border-radius: 50%; background: #e1f5fe; color: #00BCD4; display: flex; align-items: center; justify-content: center; font-size: 50px; margin-bottom: 15px; border: 4px dashed #81d4fa; }
+
+/* 🔘 الأزرار الرئيسية */
+.main-btn { 
+    background: linear-gradient(135deg, var(--success-color) 0%, #7cb342 100%); 
+    color: var(--white); width: 100%; padding: 16px; border: none; border-radius: 20px; 
+    cursor: pointer; font-weight: 900; font-size: 18px; 
+    box-shadow: 0 6px 15px rgba(139, 195, 74, 0.4); transition: 0.2s;
+    display: flex; justify-content: center; align-items: center; gap: 10px;
+}
+.main-btn:active { transform: scale(0.95); }
+
+/* 🧸 بطاقات التلاميذ (قائمة الرئيسية) */
+.card { 
+    background: var(--white); padding: 15px; margin-bottom: 15px; 
+    border-radius: 20px; border: 2px solid #eef5fb; 
+    display: flex; align-items: center; gap: 15px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s;
+    cursor: pointer;
+}
+.card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--secondary-color); }
+.card-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #e0f0ff; background: #f0f8ff; }
+
+.pickup-row, .doc-row { display: flex; gap: 10px; margin-bottom: 12px; background: #fdfdfd; padding: 12px; border-radius: 15px; border: 2px solid #f0f0f0; align-items: center; }
+
+/* 🪟 النوافذ المنبثقة (Modals) */
+#profileModal, #imageModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 40, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; backdrop-filter: blur(5px); }
+#profileContent { background: var(--white); width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 25px; padding: 25px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
+
+.badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: 900; color: white; }
+
+/* 🛠️ أزرار نافذة ملف التلميذ */
+.modal-actions-container { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; border-top: 2px dashed #eee; padding-top: 20px; }
+.btn-modal { width: 100%; padding: 14px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; font-family: 'Cairo'; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .btn-modal:active { transform: scale(0.96); }
-.btn-edit { background: #ffc107; color: #000; }
-.btn-print { background: #17a2b8; color: #fff; }
-.btn-delete { background: #dc3545; color: #fff; }
+.btn-edit { background: var(--primary-color); color: var(--white); box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3); }
+.btn-print { background: var(--secondary-color); color: var(--white); box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3); }
+.btn-delete { background: var(--accent-color); color: var(--white); box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3); }
+
+/* إحصائيات الرئيسية */
+.stat-box { background: var(--white); padding: 20px; border-radius: 20px; text-align: center; border: 3px solid #eef5fb; box-shadow: 0 4px 10px rgba(0,0,0,0.03); flex: 1; }
 </style>
 </head>
 <body>
 
 <div id="imageModal" onclick="this.style.display='none'">
-    <div style="max-width: 90%; max-height: 80%; background: #fff; padding: 5px; border-radius: 10px;">
-        <img id="fullImage" src="" style="width: 100%; border-radius: 8px;">
+    <div style="max-width: 90%; max-height: 80%; background: #fff; padding: 10px; border-radius: 20px;">
+        <img id="fullImage" src="" style="width: 100%; border-radius: 15px;">
         <p style="text-align: center; margin: 10px 0; font-weight: bold; color: #333;">إضغط في أي مكان للإغلاق</p>
     </div>
 </div>
@@ -101,168 +151,174 @@ input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; borde
 <div id="profileModal">
     <div id="profileContent">
         <div id="profileData"></div>
-        <button onclick="document.getElementById('profileModal').style.display='none'" class="main-btn" style="background: #e0e0e0; color: #333; margin-top: 15px; box-shadow: none;">❌ إغلاق الملف</button>
+        <button onclick="document.getElementById('profileModal').style.display='none'" class="btn-modal" style="background: #e0e0e0; color: #444; margin-top: 15px; box-shadow: none;">❌ إغلاق الملف</button>
     </div>
 </div>
 
 <header>
     <div class="top-bar">
-        <div id="live-clock" style="font-weight: 800; color: #555;"></div>
+        <div id="live-clock" style="font-weight: 900; color: var(--secondary-color); background: #e0f7fa; padding: 5px 12px; border-radius: 15px; font-size: 14px;"></div>
         <div class="logo-container">
-            <img id="headerLogo" class="logo-img" style="display:none;">
-            <div id="headerText" class="logo-text">إدارة المؤسسة</div>
+            <img id="headerLogo" class="logo-img" src="logo.png" alt="Logo">
+            <div id="headerText" class="logo-text">روضة P'tit Ange</div>
         </div>
     </div>
     <div class="nav-buttons">
         <button onclick="show('home', this)" class="active-nav">🏠 الرئيسية</button>
-        <button onclick="show('registration', this)">📝 ترسيم جديد</button>
+        <button onclick="show('registration', this)">📝 ترسيم</button>
         <button onclick="show('finance', this)">💰 المالية</button>
-        <button onclick="show('settings', this)">⚙️ الإعدادات</button>
+        <button onclick="show('settings', this)">⚙️ إعدادات</button>
     </div>
 </header>
 
 <div id="home" class="section active">
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-        <div style="background: #fff; padding: 15px; border-radius: 10px; text-align: center; border-bottom: 4px solid var(--primary-color);">
-            <div style="font-size: 12px; color: #888;">التلاميذ</div>
-            <div id="stat-count" style="font-size: 22px; font-weight: 900;">0</div>
+    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+        <div class="stat-box" style="border-bottom: 5px solid var(--secondary-color);">
+            <div style="font-size: 30px; margin-bottom: 5px;">🎈</div>
+            <div style="font-size: 13px; color: #888; font-weight:bold;">عدد التلاميذ</div>
+            <div id="stat-count" style="font-size: 26px; font-weight: 900; color: var(--secondary-color);">0</div>
         </div>
-        <div style="background: #fff; padding: 15px; border-radius: 10px; text-align: center; border-bottom: 4px solid #198754;">
-            <div style="font-size: 12px; color: #888;">المداخيل</div>
-            <div id="stat-money" style="font-size: 22px; font-weight: 900;">0 د.ت</div>
+        <div class="stat-box" style="border-bottom: 5px solid var(--success-color);">
+            <div style="font-size: 30px; margin-bottom: 5px;">🪙</div>
+            <div style="font-size: 13px; color: #888; font-weight:bold;">المداخيل</div>
+            <div id="stat-money" style="font-size: 26px; font-weight: 900; color: var(--success-color);">0 د.ت</div>
         </div>
     </div>
-    <h2>قائمة التلاميذ</h2>
+    <h2>🧸 قائمة صغارنا</h2>
     <div id="studentsList"></div>
 </div>
 
 <div id="registration" class="section">
-    <h2>📝 ترسيم تلميذ جديد / تحيين</h2>
+    <h2>🎨 ترسيم تلميذ جديد / تحيين</h2>
     
     <div class="photo-upload-container">
-        <div id="photoPlaceholder" class="photo-placeholder">👤</div>
+        <div id="photoPlaceholder" class="photo-placeholder">👧🧒</div>
         <img id="photoPreview" src="">
         <input type="file" id="cPhoto" accept="image/*" onchange="previewImg(event)" style="display:none;">
-        <button class="action-btn btn-outline" style="border: 1px solid var(--primary-color); color: var(--primary-color); padding: 8px 15px; border-radius: 8px; background: transparent; cursor: pointer; font-family: 'Cairo'; font-weight: bold;" onclick="document.getElementById('cPhoto').click()">📸 اختر صورة الطفل</button>
+        <button class="btn-modal" style="background: #e1f5fe; color: var(--secondary-color); border: 2px dashed var(--secondary-color); width: auto; padding: 10px 20px; box-shadow:none;" onclick="document.getElementById('cPhoto').click()">📸 اختر صورة البطل(ة)</button>
     </div>
 
     <div class="form-section">
-        <h3>🔹 1. الهوية</h3>
+        <h3>🆔 1. هوية البطل(ة)</h3>
         <input type="text" id="cName" placeholder="الإسم واللقب للطفل *">
         <label class="input-label">تاريخ الولادة *</label>
         <input type="date" id="cDOB">
         <select id="cGender">
             <option value="" disabled selected>-- اختر الجنس * --</option>
-            <option value="ذكر">ذكر</option>
-            <option value="أنثى">أنثى</option>
+            <option value="ذكر">👦 ولد</option>
+            <option value="أنثى">👧 بنية</option>
         </select>
     </div>
 
     <div class="form-section">
-        <h3>🔹 2. الأبوين والمسؤولية</h3>
+        <h3>👨‍👩‍👧 2. الأبوين والمسؤولية</h3>
         <div class="parent-block">
-            <label style="color:var(--primary-color); font-weight:bold;"><input type="checkbox" id="fDead" onchange="toggleP('f')"> الأب متوفى</label>
-            <div id="fFields">
+            <label style="color:var(--dark-text); font-weight:bold; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="fDead" onchange="toggleP('f')" style="width:20px; margin:0;"> الأب متوفى (رحمه الله)</label>
+            <div id="fFields" style="margin-top:10px;">
                 <input type="text" id="fName" placeholder="اسم الأب">
                 <input type="tel" id="fPhone" placeholder="هاتف الأب">
             </div>
         </div>
+        <hr style="border:0; border-top:1px dashed #ddd; margin:15px 0;">
         <div class="parent-block">
-            <label style="color:#e83e8c; font-weight:bold;"><input type="checkbox" id="mDead" onchange="toggleP('m')"> الأم متوفاة</label>
-            <div id="mFields">
+            <label style="color:var(--dark-text); font-weight:bold; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="mDead" onchange="toggleP('m')" style="width:20px; margin:0;"> الأم متوفاة (رحمها الله)</label>
+            <div id="mFields" style="margin-top:10px;">
                 <input type="text" id="mName" placeholder="اسم الأم">
                 <input type="tel" id="mPhone" placeholder="هاتف الأم">
             </div>
         </div>
-        <label class="input-label">من هو الولي المسؤول؟ *</label>
+        <label class="input-label" style="margin-top:15px;">من هو الولي المسؤول المباشر؟ *</label>
         <select id="pLegal"><option value="الأب">الأب</option><option value="الأم">الأم</option></select>
     </div>
 
     <div class="form-section">
-        <h3>🔹 3. نظام الحضور والوجبات</h3>
+        <h3>🏫 3. الحضور والوجبات</h3>
         <div style="display:flex; gap:10px;">
-            <select id="regAttendance" style="flex:1;"><option>يوم كامل</option><option>نصف يوم</option></select>
-            <select id="regMeals" style="flex:1;"><option>وجبات الروضة</option><option>وجبات من المنزل</option></select>
+            <select id="regAttendance" style="flex:1;"><option>☀️ يوم كامل</option><option>🌤️ نصف يوم</option></select>
+            <select id="regMeals" style="flex:1;"><option>🍲 وجبات الروضة</option><option>🍱 وجبات من المنزل</option></select>
         </div>
-        <select id="regClass"><option value="" disabled selected>-- القسم * --</option><option>حضانة</option><option>روضة أ</option><option>روضة ب</option><option>تحضيري</option></select>
+        <select id="regClass"><option value="" disabled selected>-- اختر القسم * --</option><option>🍼 حضانة</option><option>🖍️ روضة أ</option><option>🎨 روضة ب</option><option>📚 تحضيري</option></select>
     </div>
 
     <div class="form-section">
-        <h3>🔹 4. النقل (اختياري)</h3>
+        <h3>🚌 4. النقل (اختياري)</h3>
         <select id="regTrans" onchange="document.getElementById('transFields').style.display=(this.value==='نعم'?'block':'none')">
-            <option value="لا">لا يوجد نقل</option>
-            <option value="نعم">نعم (مشترك في الحافلة)</option>
+            <option value="لا">❌ لا يوجد نقل</option>
+            <option value="نعم">✅ نعم (مشترك في الحافلة)</option>
         </select>
-        <div id="transFields" style="display:none;">
-            <input type="text" id="transRoute" placeholder="المسار / العنوان">
-            <input type="number" id="transFee" placeholder="معلوم النقل الشهري">
+        <div id="transFields" style="display:none; margin-top:15px;">
+            <input type="text" id="transRoute" placeholder="المسار / عنوان السكن">
+            <input type="number" id="transFee" placeholder="معلوم النقل (د.ت)">
             <input type="text" id="transDriver" placeholder="اسم السائق ورقمه">
         </div>
     </div>
 
     <div class="form-section">
-        <h3>🔹 5. المسموح لهم بالاصطحاب</h3>
+        <h3>🤝 5. المسموح لهم بالاصطحاب</h3>
         <div id="pickupBox">
             <div class="pickup-row">
                 <input type="text" class="pName" placeholder="الإسم">
                 <input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;">
             </div>
         </div>
-        <button class="action-btn" style="width:100%; border: 1px dashed var(--primary-color); color: var(--primary-color); padding: 8px; border-radius: 8px; background: #f0f7ff; cursor: pointer; font-family: 'Cairo'; font-weight: bold;" onclick="addPickup()">➕ إضافة شخص</button>
+        <button class="btn-modal" style="background: #fff8e1; color: var(--primary-color); border: 2px dashed var(--primary-color); box-shadow:none;" onclick="addPickup()">➕ إضافة شخص آخر</button>
     </div>
 
     <div class="form-section">
-        <h3>🔹 6. الوثائق المستلمة</h3>
-        <div id="regDocsBox"></div>
+        <h3>📁 6. الوثائق المستلمة</h3>
+        <div id="regDocsBox" style="font-weight:bold; color:#555;"></div>
     </div>
 
     <div class="form-section">
-        <h3>🔹 7. المالية وحقوق الصورة</h3>
-        <select id="regPaySys"><option value="شهري">شهري</option><option value="ثلاثي">ثلاثي</option><option value="مجاني">حالة اجتماعية</option></select>
-        <input type="number" id="regFee" placeholder="المعلوم المتفق عليه *">
+        <h3>💳 7. المالية وحقوق الصورة</h3>
+        <select id="regPaySys"><option value="شهري">📅 دفع شهري</option><option value="ثلاثي">📊 دفع ثلاثي</option><option value="مجاني">🎁 حالة اجتماعية (مجاني)</option></select>
+        <input type="number" id="regFee" placeholder="المعلوم المتفق عليه (د.ت) *">
         
-        <div style="background:#f0f7ff; padding:10px; border-radius:8px; border:1px solid #cce5ff;">
-            <label style="font-weight:bold; cursor:pointer;"><input type="checkbox" id="cImageRights" checked> موافقة الولي على حقوق الصورة</label>
-            <p style="font-size:11px; color:#555; margin:5px 0 0 0;">(سيتم توليد عقد رسمي للطباعة في حال الموافقة)</p>
+        <div style="background:#f0fdf4; padding:15px; border-radius:15px; border:2px solid #bbf7d0; margin-top:10px;">
+            <label style="font-weight:900; color:var(--success-color); cursor:pointer; display:flex; align-items:center; gap:8px;"><input type="checkbox" id="cImageRights" checked style="width:20px; margin:0;"> موافقة الولي على حقوق الصورة 📸</label>
+            <p style="font-size:12px; color:#666; margin:5px 0 0 0; line-height:1.4;">(سيتم توليد عقد رسمي للطباعة في حال الموافقة)</p>
         </div>
     </div>
 
-    <button class="main-btn" onclick="saveStudent()">💾 حفظ وحفظ التلميذ</button>
+    <button class="main-btn" onclick="saveStudent()">💾 حفظ التلميذ</button>
 </div>
 
 <div id="finance" class="section">
-    <h2>💰 المالية</h2>
-    <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #eee;">
-        <p style="color: #666; font-weight: bold;">هذا القسم قيد التطوير...</p>
+    <h2>💰 قسم المالية</h2>
+    <div style="background: white; padding: 30px; border-radius: 20px; text-align: center; border: 3px dashed #bbdefb;">
+        <div style="font-size:50px; margin-bottom:15px;">🚧</div>
+        <h3 style="color: var(--secondary-color); margin:0;">هذا القسم قيد التطوير</h3>
+        <p style="color: #888; font-weight: bold; margin-top:10px;">باش يكون جاهز في التحديث القادم إن شاء الله!</p>
     </div>
 </div>
 
 <div id="settings" class="section">
-    <h2>⚙️ الإعدادات العامة</h2>
+    <h2>⚙️ إعدادات المؤسسة</h2>
     <div class="form-section">
-        <h3>بيانات المؤسسة</h3>
-        <input type="text" id="setInstName" placeholder="اسم المؤسسة">
-        <input type="text" id="setInstAddr" placeholder="العنوان الكامل">
-        <input type="file" id="setLogo" accept="image/*" onchange="uploadLogo(event)" style="margin-bottom: 10px;">
+        <h3>🏫 بيانات الروضة</h3>
+        <input type="text" id="setInstName" placeholder="اسم المؤسسة (مثال: روضة P'tit Ange)">
+        <input type="text" id="setInstAddr" placeholder="العنوان الكامل للروضة">
+        <label class="input-label">تغيير الشعار (اللوغو)</label>
+        <input type="file" id="setLogo" accept="image/*" onchange="uploadLogo(event)" style="padding:10px; background:#fff;">
     </div>
     <div class="form-section">
-        <h3>إدارة الوثائق المطلوبة</h3>
-        <div id="docsManagerBox"></div>
-        <div style="display:flex; gap:5px; margin-top: 10px;">
-            <input type="text" id="newDocName" placeholder="اسم وثيقة جديدة" style="margin:0;">
-            <button class="action-btn" style="background: var(--primary-color); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer;" onclick="addDocType()">➕</button>
+        <h3>📑 إدارة الوثائق المطلوبة للترسيم</h3>
+        <div id="docsManagerBox" style="margin-bottom:15px;"></div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="newDocName" placeholder="اسم وثيقة جديدة..." style="margin:0;">
+            <button class="btn-modal" style="background: var(--success-color); color: white; width:60px; box-shadow:none; padding:0;" onclick="addDocType()">➕</button>
         </div>
     </div>
     <div class="form-section">
-        <h3>الألوان</h3>
-        <input type="color" id="setPrimaryColor" style="height: 40px; padding: 0;">
+        <h3>🎨 اللون الرئيسي للتطبيقة</h3>
+        <input type="color" id="setPrimaryColor" style="height: 50px; padding: 5px; cursor:pointer;">
     </div>
-    <button class="main-btn" onclick="saveSettings()">💾 حفظ الإعدادات</button>
-    <button class="action-btn" style="width:100%; margin-top:15px; background: #dc3545; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; font-weight: bold;" onclick="exportData()">⬇️ نسخة احتياطية من البيانات</button>
+    <button class="btn-modal" style="background: var(--secondary-color); color: white; padding:15px; font-size:18px;" onclick="saveSettings()">💾 حفظ إعدادات الروضة</button>
+    <button class="btn-modal" style="margin-top:20px; background: #e0e0e0; color: #444; box-shadow:none;" onclick="exportData()">⬇️ تحميل نسخة احتياطية من كل البيانات</button>
 </div>
 
 <script>
-// 1. إعدادات Firebase
+// 1. إعدادات Firebase (مربوطة بمشروع Becha Events)
 const firebaseConfig = {
     apiKey: "AIzaSyCTTjp34QhF6MPNemwKhoq7385xnJKK_Hg",
     authDomain: "becha-events-kids.firebaseapp.app",
@@ -281,11 +337,11 @@ const db = firebase.database();
 
 // متغيرات البيانات العامة
 let students = [];
-let settings = {"docs":["مضمون ولادة","دفتر تلاقيح","شهادة طبية"],"primaryColor":"#0d6efd"};
+let settings = {"docs":["مضمون ولادة","دفتر تلاقيح","شهادة طبية"],"primaryColor":"#FF9800"};
 let editingId = null;
 let isSaving = false;
 
-// 2. جلب البيانات من Firebase بشكل لحظي عند تحميل الصفحة
+// 2. جلب البيانات من Firebase بشكل لحظي
 function loadDataFromFirebase() {
     db.ref('GestionPetitAnge/settings').on('value', snap => {
         if(snap.exists()) {
@@ -293,7 +349,7 @@ function loadDataFromFirebase() {
             applySets();
             if(document.getElementById('setInstName')) document.getElementById('setInstName').value = settings.instName || '';
             if(document.getElementById('setInstAddr')) document.getElementById('setInstAddr').value = settings.instAddr || '';
-            if(document.getElementById('setPrimaryColor')) document.getElementById('setPrimaryColor').value = settings.primaryColor || '#0d6efd';
+            if(document.getElementById('setPrimaryColor')) document.getElementById('setPrimaryColor').value = settings.primaryColor || '#FF9800';
         } else {
             applySets(); 
         }
@@ -305,19 +361,25 @@ function loadDataFromFirebase() {
     });
 }
 
-// 3. تطبيق إعدادات الألوان والشعار
+// 3. تطبيق إعدادات الألوان والشعار (اللوغو الافتراضي logo.png)
 function applySets() {
-    document.documentElement.style.setProperty('--primary-color', settings.primaryColor || '#0d6efd');
-    if(document.getElementById('headerText')) document.getElementById('headerText').innerText = settings.instName || "إدارة المؤسسة";
-    if(settings.logo && document.getElementById('headerLogo')) {
-        document.getElementById('headerLogo').src = settings.logo;
-        document.getElementById('headerLogo').style.display = 'block';
-        if(document.getElementById('headerText')) document.getElementById('headerText').style.display = 'none';
+    document.documentElement.style.setProperty('--primary-color', settings.primaryColor || '#FF9800');
+    
+    let logoImg = document.getElementById('headerLogo');
+    let headerText = document.getElementById('headerText');
+    
+    if(headerText) headerText.innerText = settings.instName || "روضة P'tit Ange";
+    
+    if(logoImg) {
+        // إذا فما لوغو مسجل في الفايربيس يخدمو، وإلا يخدم logo.png من الـ GitHub
+        logoImg.src = settings.logo || 'logo.png';
+        logoImg.style.display = 'block';
     }
+    
     renderDocs();
 }
 
-// 4. رسم قائمة الوثائق المطلوبة
+// 4. رسم قائمة الوثائق
 function renderDocs() {
     let box = document.getElementById('docsManagerBox');
     let regBox = document.getElementById('regDocsBox');
@@ -325,14 +387,14 @@ function renderDocs() {
     box.innerHTML = ''; regBox.innerHTML = '';
     if(settings.docs){
         settings.docs.forEach((d, i) => {
-            box.innerHTML += `<div class="doc-row">${d} <button onclick="delDoc(${i})" style="color:red; background:none; border:none; margin-right:auto; cursor:pointer;">🗑</button></div>`;
-            regBox.innerHTML += `<label style="display:flex; align-items:center; gap:8px; margin-bottom:5px;"><input type="checkbox" class="doc-check" value="${d}"> ${d}</label>`;
+            box.innerHTML += `<div class="doc-row"><span style="font-weight:bold; color:var(--secondary-color);">📄 ${d}</span> <button onclick="delDoc(${i})" style="color:red; background:#ffebee; border:none; border-radius:50%; width:30px; height:30px; margin-right:auto; cursor:pointer; font-weight:bold;">X</button></div>`;
+            regBox.innerHTML += `<label style="display:flex; align-items:center; gap:10px; margin-bottom:10px; cursor:pointer;"><input type="checkbox" class="doc-check" value="${d}" style="width:20px; height:20px; margin:0;"> ${d}</label>`;
         });
     }
 }
 
 function addDocType() {
-    let val = document.getElementById('newDocName').value;
+    let val = document.getElementById('newDocName').value.trim();
     if(val) { 
         if(!settings.docs) settings.docs = [];
         settings.docs.push(val); 
@@ -348,7 +410,7 @@ function delDoc(i) {
     }
 }
 
-// 5. معاينة صورة الطفل عند رفعها
+// 5. معاينة صورة الطفل
 function previewImg(e) {
     let reader = new FileReader();
     reader.onload = () => {
@@ -369,11 +431,11 @@ function toggleP(t) {
 
 function addPickup() {
     let div = document.createElement('div'); div.className = 'pickup-row';
-    div.innerHTML = `<input type="text" class="pName" placeholder="الإسم"><input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">X</button>`;
+    div.innerHTML = `<input type="text" class="pName" placeholder="الإسم"><input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;"><button onclick="this.parentElement.remove()" style="color:red; background:#ffebee; border:none; border-radius:50%; width:35px; height:35px; cursor:pointer; font-weight:bold;">X</button>`;
     document.getElementById('pickupBox').appendChild(div);
 }
 
-// 6. دالة حفظ التلميذ (حماية من التكرار + دعم التحيين)
+// 6. حفظ أو تحيين التلميذ
 function saveStudent() {
     if(isSaving) return;
 
@@ -386,11 +448,10 @@ function saveStudent() {
     let mDead = document.getElementById('mDead').checked;
     let today = new Date().toISOString().split('T')[0];
 
-    // إجبارية إدخال البيانات الأساسية
-    if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("البيانات الأساسية ناقصة! الرجاء إكمال جميع الخانات الإجبارية (الاسم، تاريخ الولادة، الجنس، القسم).");
-    if(dob >= today) return alert("تاريخ الولادة يجب أن يكون في الماضي!");
-    if((pLegal==='الأب' && fDead) || (pLegal==='الأم' && mDead)) return alert("لا يمكن اختيار ولي متوفى كمسؤول!");
-    if(document.getElementById('regPaySys').value !== 'مجاني' && fee <= 0) return alert("يجب إدخال معلوم مالي!");
+    if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("🎈 يعيشك كمّل الخانات الإجبارية (الاسم، تاريخ الولادة، الجنس، القسم) باش النجمو نسجلوه!");
+    if(dob >= today) return alert("🧸 تاريخ الولادة لازم يكون في الماضي!");
+    if((pLegal==='الأب' && fDead) || (pLegal==='الأم' && mDead)) return alert("⚠️ لا يمكن اختيار ولي متوفى كمسؤول مباشر!");
+    if(document.getElementById('regPaySys').value !== 'مجاني' && fee <= 0) return alert("🪙 الرجاء إدخال المعلوم المالي المتفق عليه!");
 
     isSaving = true;
 
@@ -425,9 +486,8 @@ function saveStudent() {
     }
     
     db.ref('GestionPetitAnge/students').set(students).then(() => {
-        alert(editingId ? "تم التحيين بنجاح!" : "تم الحفظ بنجاح في قاعدة البيانات!"); 
+        alert(editingId ? "✨ تم تحيين معطيات التلميذ بنجاح!" : "🎉 تم تسجيل التلميذ بنجاح في الروضة!"); 
         
-        // إعادة تهيئة الواجهة
         document.getElementById('cName').value = '';
         document.getElementById('photoPreview').src = '';
         document.getElementById('photoPreview').style.display = 'none';
@@ -436,8 +496,8 @@ function saveStudent() {
         editingId = null;
         let saveBtn = document.querySelector('#registration .main-btn');
         if(saveBtn) {
-            saveBtn.innerHTML = "💾 حفظ وحفظ التلميذ";
-            saveBtn.style.background = "var(--primary-gradient)";
+            saveBtn.innerHTML = "💾 حفظ التلميذ";
+            saveBtn.style.background = "linear-gradient(135deg, var(--success-color) 0%, #7cb342 100%)";
         }
         
         isSaving = false;
@@ -449,28 +509,33 @@ function saveStudent() {
     });
 }
 
-// 7. عرض الملف الشخصي للتلميذ
+// 7. عرض الملف الشخصي
 function viewProfile(id) {
     let s = students.find(x => x.id === id);
     if(!s) return;
     let p = s.legal === 'الأب' ? s.f : s.m;
-    let photoHtml = s.photo ? `<img src="${s.photo}" style="width:100px; height:100px; border-radius:50%; cursor:pointer; object-fit:cover;" onclick="zoomImg('${s.photo}')">` : `<div style="width:100px; height:100px; border-radius:50%; background:#ddd; line-height:100px; font-size:40px; margin:0 auto;">👤</div>`;
+    let photoHtml = s.photo ? `<img src="${s.photo}" style="width:110px; height:110px; border-radius:50%; cursor:pointer; object-fit:cover; border:4px solid var(--secondary-color); box-shadow:0 4px 10px rgba(0,0,0,0.1);" onclick="zoomImg('${s.photo}')">` : `<div style="width:110px; height:110px; border-radius:50%; background:#e1f5fe; color:var(--secondary-color); line-height:110px; font-size:50px; margin:0 auto; border:4px dashed #81d4fa;">👦</div>`;
     
     let html = `
-        <div style="text-align:center; margin-bottom:15px;">${photoHtml}<h3 style="margin-top:10px;">${s.name}</h3></div>
-        <div style="font-size:14px; line-height:1.8; background:#f9f9f9; padding:15px; border-radius:10px;">
-            <b>القسم:</b> <span style="color:var(--primary-color); font-weight:bold;">${s.life.cls}</span> | <b>الجنس:</b> ${s.gen}<br>
-            <b>تاريخ الولادة:</b> ${s.dob}<br>
-            <b>الولي المباشر:</b> ${p.n || '---'} (<a href="tel:${p.p}" style="text-decoration:none; font-weight:bold;">${p.p || 'بدون هاتف'}</a>)<br>
-            <b>النظام:</b> ${s.life.att} | <b>اللمجة/الوجبات:</b> ${s.life.meals}<br>
-            <hr style="border:0; border-top:1px dashed #ddd; margin:10px 0;">
-            <b>النقل:</b> ${s.trans.active ? `✅ المشترك في خط: ${s.trans.route || '---'}` : '❌ لا يوجد'}<br>
-            <b>المسموح لهم بالاصطحاب:</b> ${s.pickup && s.pickup.length > 0 ? s.pickup.map(x=>x.n).join('، ') : 'الأبوين فقط'}<br>
-            <hr style="border:0; border-top:1px dashed #ddd; margin:10px 0;">
-            <b>الوثائق الناقصة:</b> ${settings.docs && s.docs && settings.docs.length > s.docs.length ? `<span style="color:red;">` + settings.docs.filter(d => !s.docs.includes(d)).join('، ') + `</span>` : '<span style="color:green; font-weight:bold;">✅ ملف كامل</span>'}<br>
+        <div style="text-align:center; margin-bottom:20px;">${photoHtml}<h3 style="margin-top:15px; color:var(--primary-color); font-size:22px; font-weight:900;">${s.name}</h3></div>
+        <div style="font-size:15px; line-height:1.8; background:#f4faff; padding:20px; border-radius:20px; border:2px solid #e0f0ff;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>القسم:</b> <span class="badge" style="background:var(--primary-color); font-size:14px;">${s.life.cls}</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>الجنس:</b> <span>${s.gen}</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>تاريخ الولادة:</b> <span>${s.dob}</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>الولي المباشر:</b> <span>${p.n || '---'} (<a href="tel:${p.p}" style="color:var(--secondary-color); font-weight:900;">${p.p || 'بدون هاتف'}</a>)</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>نظام الحضور:</b> <span style="font-weight:bold;">${s.life.att} | ${s.life.meals}</span></div>
+            
+            <hr style="border:0; border-top:2px dashed #bce0fd; margin:15px 0;">
+            
+            <b>🚌 النقل:</b> ${s.trans.active ? `<span style="color:var(--success-color); font-weight:bold;">✅ خط: ${s.trans.route || '---'}</span>` : '❌ لا يوجد'}<br>
+            <b style="margin-top:8px; display:block;">🤝 المسموح لهم بالاصطحاب:</b> ${s.pickup && s.pickup.length > 0 ? `<span style="color:var(--primary-color); font-weight:bold;">`+s.pickup.map(x=>x.n).join('، ')+`</span>` : 'الأبوين فقط'}<br>
+            
+            <hr style="border:0; border-top:2px dashed #bce0fd; margin:15px 0;">
+            
+            <b>📁 الوثائق الناقصة:</b><br> ${settings.docs && s.docs && settings.docs.length > s.docs.length ? `<span style="color:var(--accent-color); font-weight:bold; display:block; margin-top:5px;">` + settings.docs.filter(d => !s.docs.includes(d)).map(d => '▪︎ '+d).join('<br>') + `</span>` : '<div style="background:var(--success-color); color:white; padding:5px 10px; border-radius:10px; display:inline-block; margin-top:5px; font-weight:bold;">✅ ملف كامل ومريقل</div>'}
             
             <div class="modal-actions-container">
-                <button class="btn-modal btn-edit" onclick="editStudent(${s.id})">✏️ تحيين معطيات التلميذ</button>
+                <button class="btn-modal btn-edit" onclick="editStudent(${s.id})">✏️ تحيين المعطيات</button>
                 ${s.rights ? `<button class="btn-modal btn-print" onclick="printContract(${s.id})">🖨️ طباعة ترخيص الصورة</button>` : ''}
                 <button class="btn-modal btn-delete" onclick="delStu(${s.id})">🗑️ حذف التلميذ نهائياً</button>
             </div>
@@ -480,7 +545,7 @@ function viewProfile(id) {
     document.getElementById('profileModal').style.display = 'flex';
 }
 
-// 8. تحيين معطيات التلميذ (تحضير الفورم)
+// 8. تحيين معطيات التلميذ
 function editStudent(id) {
     let s = students.find(x => x.id === id);
     if(!s) return;
@@ -529,7 +594,7 @@ function editStudent(id) {
     if(s.pickup && s.pickup.length > 0) {
         s.pickup.forEach(p => {
             let div = document.createElement('div'); div.className = 'pickup-row';
-            div.innerHTML = `<input type="text" class="pName" placeholder="الإسم" value="${p.n}"><input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;" value="${p.p}"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">X</button>`;
+            div.innerHTML = `<input type="text" class="pName" placeholder="الإسم" value="${p.n}"><input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;" value="${p.p}"><button onclick="this.parentElement.remove()" style="color:red; background:#ffebee; border:none; border-radius:50%; width:35px; height:35px; cursor:pointer; font-weight:bold;">X</button>`;
             document.getElementById('pickupBox').appendChild(div);
         });
     } else { addPickup(); }
@@ -539,14 +604,14 @@ function editStudent(id) {
     let saveBtn = document.querySelector('#registration .main-btn');
     if(saveBtn) {
         saveBtn.innerHTML = "💾 تحيين وحفظ التعديلات";
-        saveBtn.style.background = "linear-gradient(135deg, #ff9800 0%, #e65100 100%)";
+        saveBtn.style.background = "linear-gradient(135deg, #FF9800 0%, #F57C00 100%)";
     }
 }
 
 function zoomImg(src) { document.getElementById('fullImage').src = src; document.getElementById('imageModal').style.display = 'flex'; }
 
 function delStu(id) { 
-    if(confirm("هل أنت متأكد من الحذف النهائي لهذا التلميذ من قاعدة البيانات؟ لا يمكن التراجع عن هذه العملية!")) { 
+    if(confirm("⚠️ متأكد تحب تفسخ التلميذ هذا نهائياً من الروضة ومن قاعدة البيانات؟")) { 
         students = students.filter(x=>x.id!==id); 
         db.ref('GestionPetitAnge/students').set(students);
         document.getElementById('profileModal').style.display = 'none';
@@ -558,21 +623,24 @@ function printContract(id) {
     let s = students.find(x => x.id === id);
     let p = s.legal === 'الأب' ? s.f : s.m;
     let div = document.createElement('div');
-    div.style.cssText = "position:absolute; top:0; left:0; width:550px; padding:40px; background:#fff; direction:rtl; font-family:Cairo; border:2px solid #333; z-index:-1;";
+    div.style.cssText = "position:absolute; top:0; left:0; width:550px; padding:40px; background:#fff; direction:rtl; font-family:Cairo; border:3px solid var(--secondary-color); border-radius:20px; z-index:-1;";
     div.innerHTML = `
-        <h2 style="text-align:center;">ترخيص أبوي في حق الصورة</h2>
-        <p>إني الممضي(ة) أسفله السيد(ة): <b>${p.n || '.......'}</b>، بصفتي الولي الشرعي للطفل(ة): <b>${s.name}</b>.</p>
-        <p>أرخص صراحة للمؤسسة التربوية: <b>"${settings.instName || 'مؤسستنا'}"</b>، الكائن مقرها بـ: <b>${settings.instAddr || '.......'}</b>، بالتقاط صور وفيديوهات لابني/ابنتي خلال الأنشطة ونشرها في الوسائط الرسمية للمؤسسة.</p>
-        <div style="margin-top:50px; display:flex; justify-content:space-between;">
+        <div style="text-align:center; margin-bottom:20px;">
+            <img src="${settings.logo || 'logo.png'}" style="max-height:80px; margin-bottom:10px;">
+            <h2 style="color:var(--primary-color); margin:0;">ترخيص أبوي في حق الصورة</h2>
+        </div>
+        <p style="font-size:18px; line-height:1.8;">إني الممضي(ة) أسفله السيد(ة): <b>${p.n || '.......'}</b>، بصفتي الولي الشرعي للطفل(ة): <b style="color:var(--secondary-color);">${s.name}</b>.</p>
+        <p style="font-size:18px; line-height:1.8;">أرخص صراحة للمؤسسة التربوية: <b>"${settings.instName || "روضة P'tit Ange"}"</b>، الكائن مقرها بـ: <b>${settings.instAddr || '.......'}</b>، بالتقاط صور وفيديوهات لابني/ابنتي خلال الأنشطة التربوية والترفيهية ونشرها في الوسائط الرسمية للمؤسسة.</p>
+        <div style="margin-top:50px; display:flex; justify-content:space-between; font-weight:bold; font-size:18px;">
             <span>حرر في: ${new Date().toLocaleDateString('ar-TN')}</span>
             <span>إمضاء الولي: ....................</span>
         </div>
     `;
     document.body.appendChild(div);
-    html2canvas(div).then(canvas => { zoomImg(canvas.toDataURL()); div.remove(); });
+    html2canvas(div, { scale: 2 }).then(canvas => { zoomImg(canvas.toDataURL()); div.remove(); });
 }
 
-// 10. حفظ إعدادات المؤسسة في Firebase
+// 10. حفظ الإعدادات
 function saveSettings() {
     settings.instName = document.getElementById('setInstName').value;
     settings.instAddr = document.getElementById('setInstAddr').value;
@@ -580,7 +648,7 @@ function saveSettings() {
     
     db.ref('GestionPetitAnge/settings').set(settings).then(() => {
         applySets(); 
-        alert("تم حفظ الإعدادات في فايربيس!");
+        alert("✨ تم حفظ إعدادات المؤسسة بنجاح!");
     });
 }
 
@@ -590,7 +658,7 @@ function uploadLogo(e) {
     if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
 }
 
-// 11. دالة التنقل بين الصفحات
+// 11. دالة التنقل
 function show(id, btn) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     let targetSection = document.getElementById(id);
@@ -602,7 +670,7 @@ function show(id, btn) {
     render();
 }
 
-// 12. دالة رسم قائمة التلاميذ وحساب الإحصائيات
+// 12. رسم قائمة التلاميذ
 function render() {
     let list = document.getElementById('studentsList');
     if(!list) return;
@@ -614,14 +682,17 @@ function render() {
     let totalMoney = 0;
     students.forEach(s => {
         if(s.fin && s.fin.fee) totalMoney += s.fin.fee;
+        
+        let genIcon = s.gen === 'ذكر' ? '👦' : '👧';
+        
         list.innerHTML += `
-            <div class="card" onclick="viewProfile(${s.id})" style="cursor:pointer;">
-                ${s.photo ? `<img src="${s.photo}" class="card-img" style="object-fit:cover;">` : `<div class="card-img" style="background:#eee; text-align:center; line-height:50px; font-size:20px;">👤</div>`}
+            <div class="card" onclick="viewProfile(${s.id})">
+                ${s.photo ? `<img src="${s.photo}" class="card-img">` : `<div class="card-img" style="background:#e1f5fe; color:var(--secondary-color); text-align:center; line-height:60px; font-size:25px;">${genIcon}</div>`}
                 <div style="flex:1;">
-                    <div style="font-weight:bold; color:var(--primary-color);">${s.name}</div>
-                    <div style="font-size:12px; color:#666;">${s.life.cls} | ${s.life.att}</div>
+                    <div style="font-weight:900; color:var(--primary-color); font-size:16px;">${s.name}</div>
+                    <div style="font-size:12px; color:#888; font-weight:bold;">${s.life.cls} | ${s.life.att}</div>
                 </div>
-                <div class="badge" style="background:#198754;">نشط</div>
+                <div class="badge" style="background:var(--success-color); box-shadow:0 2px 5px rgba(139, 195, 74, 0.4);">مُرسّم</div>
             </div>
         `;
     });
@@ -636,12 +707,11 @@ setInterval(() => {
     if(clock) clock.innerText = new Date().toLocaleTimeString('ar-TN'); 
 }, 1000);
 
-// 14. بدء التطبيق وجلب البيانات
+// 14. بدء التطبيق
 window.onload = () => {
     loadDataFromFirebase();
 };
 
-// 15. استخراج نسخة احتياطية محلية
 function exportData() { 
     window.location.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({students, settings})); 
 }
