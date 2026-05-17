@@ -246,7 +246,7 @@ input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; borde
 </div>
 
 <script>
-// 1. إعدادات Firebase (نفسها الموجودة في تطبيقة Becha Events)
+// إعدادات Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCTTjp34QhF6MPNemwKhoq7385xnJKK_Hg",
     authDomain: "becha-events-kids.firebaseapp.app",
@@ -268,10 +268,9 @@ let students = [];
 let settings = {"docs":["مضمون ولادة","دفتر تلاقيح","شهادة طبية"],"primaryColor":"#0d6efd"};
 let payments = [];
 
-// 2. جلب البيانات من Firebase بشكل لحظي (Realtime)
+// جلب البيانات من Firebase بشكل لحظي
 function loadDataFromFirebase() {
-    // جلب الإعدادات
-    db.ref('SchoolManagement/settings').on('value', snap => {
+    db.ref('GestionPetitAnge/settings').on('value', snap => {
         if(snap.exists()) {
             settings = snap.val();
             applySets();
@@ -279,14 +278,13 @@ function loadDataFromFirebase() {
             document.getElementById('setInstAddr').value = settings.instAddr || '';
             document.getElementById('setPrimaryColor').value = settings.primaryColor || '#0d6efd';
         } else {
-            applySets(); // تطبيق الإعدادات الافتراضية إذا كانت قاعدة البيانات فارغة
+            applySets(); 
         }
     });
 
-    // جلب قائمة التلاميذ
-    db.ref('SchoolManagement/students').on('value', snap => {
+    db.ref('GestionPetitAnge/students').on('value', snap => {
         students = snap.val() || [];
-        render(); // تحديث الواجهة أوتوماتيكياً كل ما تتزاد حاجة
+        render(); 
     });
 }
 
@@ -320,7 +318,7 @@ function addDocType() {
         if(!settings.docs) settings.docs = [];
         settings.docs.push(val); 
         document.getElementById('newDocName').value=''; 
-        saveSettings(); // حفظ في فايربيس
+        saveSettings(); 
     }
 }
 function delDoc(i) { settings.docs.splice(i,1); saveSettings(); }
@@ -352,7 +350,7 @@ function saveStudent() {
     let mDead = document.getElementById('mDead').checked;
     let today = new Date().toISOString().split('T')[0];
 
-    if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("البيانات الأساسية ناقصة!");
+    if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("البيانات الأساسية ناقصة! الرجاء إكمال جميع الخانات الإجبارية.");
     if(dob >= today) return alert("تاريخ الولادة يجب أن يكون في الماضي!");
     if((pLegal==='الأب' && fDead) || (pLegal==='الأم' && mDead)) return alert("لا يمكن اختيار ولي متوفى كمسؤول!");
     if(document.getElementById('regPaySys').value !== 'مجاني' && fee <= 0) return alert("يجب إدخال معلوم مالي!");
@@ -379,10 +377,8 @@ function saveStudent() {
 
     students.push(s);
     
-    // حفظ في Firebase
-    db.ref('SchoolManagement/students').set(students).then(() => {
+    db.ref('GestionPetitAnge/students').set(students).then(() => {
         alert("تم الحفظ بنجاح في قاعدة البيانات!"); 
-        // تنظيف الفورم
         document.getElementById('cName').value = '';
         show('home', document.querySelector('.nav-buttons button'));
     }).catch(err => {
@@ -399,8 +395,9 @@ function viewProfile(id) {
         <div style="text-align:center; margin-bottom:15px;">${photoHtml}<h3>${s.name}</h3></div>
         <div style="font-size:13px; line-height:1.6; background:#f9f9f9; padding:15px; border-radius:10px;">
             <b>القسم:</b> ${s.life.cls} | <b>الجنس:</b> ${s.gen}<br>
+            <b>تاريخ الولادة:</b> ${s.dob}<br>
             <b>الولي:</b> ${p.n} (<a href="tel:${p.p}">${p.p}</a>)<br>
-            <b>النظام:</b> ${s.life.att} | <b>الوجبات:</b> ${s.life.meals}<br>
+            <b>النظام:</b> ${s.life.att} | <b>اللمجة/الوجبات:</b> ${s.life.meals}<br>
             <hr>
             <b>النقل:</b> ${s.trans.active ? `✅ ${s.trans.route} (${s.trans.fee} د.ت)` : '❌ لا يوجد'}<br>
             <b>الاصطحاب:</b> ${s.pickup && s.pickup.length > 0 ? s.pickup.map(x=>x.n).join(', ') : 'الأبوين فقط'}<br>
@@ -416,10 +413,11 @@ function viewProfile(id) {
 }
 
 function zoomImg(src) { document.getElementById('fullImage').src = src; document.getElementById('imageModal').style.display = 'flex'; }
+
 function delStu(id) { 
     if(confirm("حذف نهائي من قاعدة البيانات؟")) { 
         students = students.filter(x=>x.id!==id); 
-        db.ref('SchoolManagement/students').set(students);
+        db.ref('GestionPetitAnge/students').set(students);
         document.getElementById('profileModal').style.display = 'none';
     } 
 }
@@ -447,8 +445,7 @@ function saveSettings() {
     settings.instAddr = document.getElementById('setInstAddr').value;
     settings.primaryColor = document.getElementById('setPrimaryColor').value;
     
-    // حفظ في Firebase
-    db.ref('SchoolManagement/settings').set(settings).then(() => {
+    db.ref('GestionPetitAnge/settings').set(settings).then(() => {
         applySets(); 
         alert("تم حفظ الإعدادات في فايربيس!");
     });
@@ -474,7 +471,6 @@ function render() {
     list.innerHTML = ''; 
     document.getElementById('stat-count').innerText = students.length;
     
-    // حساب المداخيل التقريبية
     let totalMoney = 0;
     students.forEach(s => {
         if(s.fin && s.fin.fee) totalMoney += s.fin.fee;
@@ -495,7 +491,6 @@ function render() {
 setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('ar-TN'); }, 1000);
 
 window.onload = () => {
-    // بمجرد تحميل الصفحة، نربطو بفايربيس لجلب البيانات
     loadDataFromFirebase();
 };
 
