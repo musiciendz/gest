@@ -13,6 +13,13 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
+    /* أزرار نافذة ملف التلميذ */
+.modal-actions-container { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+.btn-modal { width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; font-family: 'Cairo'; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.btn-modal:active { transform: scale(0.96); }
+.btn-edit { background: #ffc107; color: #000; }
+.btn-print { background: #17a2b8; color: #fff; }
+.btn-delete { background: #dc3545; color: #fff; }
 :root {
     --primary-color: #0d6efd; 
     --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #0046b8 100%);
@@ -342,69 +349,10 @@ function addPickup() {
 
 let isSaving = false; // 🛑 زدنا هذي باش نمنعوا التكرار
 
-function saveStudent() {
-    if(isSaving) return; // كان قاعد يسجل، ما يعمل شيء كي تنزل مرة أخرى
+let editingId = null; // 🛑 متغير باش نعرفو بيه التلميذ اللي قاعدين نعدلو فيه
+let isSaving = false;
 
-    let name = document.getElementById('cName').value.trim();
-    let dob = document.getElementById('cDOB').value;
-    let gen = document.getElementById('cGender').value;
-    let fee = document.getElementById('regFee').value;
-    let pLegal = document.getElementById('pLegal').value;
-    let fDead = document.getElementById('fDead').checked;
-    let mDead = document.getElementById('mDead').checked;
-    let today = new Date().toISOString().split('T')[0];
-
-    // التثبت من البيانات
-    if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("البيانات الأساسية ناقصة! الرجاء إكمال جميع الخانات الإجبارية.");
-    if(dob >= today) return alert("تاريخ الولادة يجب أن يكون في الماضي!");
-    if((pLegal==='الأب' && fDead) || (pLegal==='الأم' && mDead)) return alert("لا يمكن اختيار ولي متوفى كمسؤول!");
-    if(document.getElementById('regPaySys').value !== 'مجاني' && fee <= 0) return alert("يجب إدخال معلوم مالي!");
-
-    isSaving = true; // 🛑 نبلوكيو الزر توة باش ما يتعاودش التسجيل
-
-    let pickup = [];
-    document.querySelectorAll('.pickup-row').forEach(r => { if(r.querySelector('.pName').value) pickup.push({n:r.querySelector('.pName').value, p:r.querySelector('.pPhone').value}); });
-    
-    let docsReceived = [];
-    document.querySelectorAll('.doc-check:checked').forEach(c => docsReceived.push(c.value));
-
-    let s = {
-        id: Date.now(), name, dob, gen,
-        photo: document.getElementById('photoPreview').src || null,
-        f: { d: fDead, n: document.getElementById('fName').value, p: document.getElementById('fPhone').value },
-        m: { d: mDead, n: document.getElementById('mName').value, p: document.getElementById('mPhone').value },
-        legal: pLegal,
-        life: { meals: document.getElementById('regMeals').value, att: document.getElementById('regAttendance').value, cls: document.getElementById('regClass').value },
-        trans: { active: document.getElementById('regTrans').value==='نعم', route: document.getElementById('transRoute').value, fee: parseFloat(document.getElementById('transFee').value)||0, driver: document.getElementById('transDriver').value },
-        fin: { sys: document.getElementById('regPaySys').value, fee: parseFloat(fee) },
-        rights: document.getElementById('cImageRights').checked,
-        docs: docsReceived,
-        pickup: pickup
-    };
-
-    students.push(s);
-    
-    db.ref('GestionPetitAnge/students').set(students).then(() => {
-        alert("تم الحفظ بنجاح في قاعدة البيانات!"); 
-        document.getElementById('cName').value = '';
-        isSaving = false; // 🛑 نرجعو نحلو البلوكاج بعد ما يكمل يسجل
-        show('home', document.querySelector('.nav-buttons button'));
-    }).catch(err => {
-        isSaving = false; // 🛑 نرجعو نحلو البلوكاج حتى كان صار خطأ
-        alert("صار خطأ في الحفظ: " + err.message);
-    });
-}
-    students.push(s);
-    
-    db.ref('GestionPetitAnge/students').set(students).then(() => {
-        alert("تم الحفظ بنجاح في قاعدة البيانات!"); 
-        document.getElementById('cName').value = '';
-        show('home', document.querySelector('.nav-buttons button'));
-    }).catch(err => {
-        alert("صار خطأ في الحفظ: " + err.message);
-    });
-}
-
+// 1. دالة عرض الملف (محدثة بالأزرار الجديدة)
 function viewProfile(id) {
     let s = students.find(x => x.id === id);
     let p = s.legal === 'الأب' ? s.f : s.m;
@@ -422,15 +370,317 @@ function viewProfile(id) {
             <b>الاصطحاب:</b> ${s.pickup && s.pickup.length > 0 ? s.pickup.map(x=>x.n).join(', ') : 'الأبوين فقط'}<br>
             <hr>
             <b>الوثائق الناقصة:</b> ${settings.docs && s.docs ? settings.docs.filter(d => !s.docs.includes(d)).join(', ') : '✅ كاملة'}<br>
-            <hr>
-            ${s.rights ? `<button class="action-btn btn-outline" style="width:100%;" onclick="printContract(${s.id})">🖨️ طباعة ترخيص الصورة</button>` : ''}
-            <button class="action-btn btn-red" style="width:100%; margin-top:10px;" onclick="delStu(${s.id})">🗑 حذف التلميذ</button>
+            
+            <div class="modal-actions-container">
+                <button class="btn-modal btn-edit" onclick="editStudent(${s.id})">✏️ تحيين معطيات التلميذ</button>
+                ${s.rights ? `<button class="btn-modal btn-print" onclick="printContract(${s.id})">🖨️ طباعة ترخيص الصورة</button>` : ''}
+                <button class="btn-modal btn-delete" onclick="delStu(${s.id})">🗑️ حذف التلميذ نهائياً</button>
+            </div>
         </div>
     `;
     document.getElementById('profileData').innerHTML = html;
     document.getElementById('profileModal').style.display = 'flex';
 }
 
+// 2. دالة التحيين الجديدة (تهزك للفورم وتعمرو)
+function editStudent(id) {
+    let s = students.find(x => x.id === id);
+    if(!s) return;
+    
+    editingId = id; // نسجلو الـ ID باش كي نحفظو نعرفوه تحيين
+    
+    // تعمير البيانات الأساسية
+    document.getElementById('cName').value = s.name;
+    document.getElementById('cDOB').value = s.dob;
+    document.getElementById('cGender').value = s.gen;
+    document.getElementById('photoPreview').src = s.photo || '';
+    document.getElementById('photoPreview').style.display = s.photo ? 'block' : 'none';
+    document.getElementById('photoPlaceholder').style.display = s.photo ? 'none' : 'flex';
+    
+    // تعمير الأبوين
+    document.getElementById('fDead').checked = s.f.d; toggleP('f');
+    document.getElementById('fName').value = s.f.n || '';
+    document.getElementById('fPhone').value = s.f.p || '';
+    document.getElementById('mDead').checked = s.m.d; toggleP('m');
+    document.getElementById('mName').value = s.m.n || '';
+    document.getElementById('mPhone').value = s.m.p || '';
+    document.getElementById('pLegal').value = s.legal;
+    
+    // النظام والوجبات
+    document.getElementById('regMeals').value = s.life.meals;
+    document.getElementById('regAttendance').value = s.life.att;
+    document.getElementById('regClass').value = s.life.cls;
+    
+    // النقل
+    document.getElementById('regTrans').value = s.trans.active ? 'نعم' : 'لا';
+    document.getElementById('transFields').style.display = s.trans.active ? 'block' : 'none';
+    document.getElementById('transRoute').value = s.trans.route || '';
+    document.getElementById('transFee').value = s.trans.fee || '';
+    document.getElementById('transDriver').value = s.trans.driver || '';
+    
+    // المالية والصورة
+    document.getElementById('regPaySys').value = s.fin.sys;
+    document.getElementById('regFee').value = s.fin.fee || '';
+    document.getElementById('cImageRights').checked = s.rights;
+    
+    // الوثائق
+    document.querySelectorAll('.doc-check').forEach(c => c.checked = false);
+    if(s.docs) { s.docs.forEach(d => { let chk = document.querySelector(`.doc-check[value="${d}"]`); if(chk) chk.checked = true; }); }
+    
+    // الاصطحاب
+    document.getElementById('pickupBox').innerHTML = '';
+    if(s.pickup && s.pickup.length > 0) {
+        s.pickup.forEach(p => {
+            let div = document.createElement('div'); div.className = 'pickup-row';
+            div.innerHTML = `<input type="text" class="pName" placeholder="الإسم" value="${p.n}"><input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;" value="${p.p}"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none;">X</button>`;
+            document.getElementById('pickupBox').appendChild(div);
+        });
+    } else { addPickup(); }
+    
+    // تبديل الواجهة وتغيير زر الحفظ
+    document.getElementById('profileModal').style.display = 'none';
+    show('registration', document.querySelectorAll('.nav-buttons button')[1]);
+    let saveBtn = document.querySelector('#registration .main-btn');
+    saveBtn.innerHTML = "💾 تحيين وحفظ التعديلات";
+    saveBtn.style.background = "linear-gradient(135deg, #ff9800 0%, #e65100 100%)";
+}
+
+// 3. دالة الحفظ المحدثة (تفرق بين تسجيل جديد وتحيين)
+function saveStudent() {
+    if(isSaving) return;
+
+    let name = document.getElementById('cName').value.trim();
+    let dob = document.getElementById('cDOB').value;
+    let gen = document.getElementById('cGender').value;
+    let fee = document.getElementById('regFee').value;
+    let pLegal = document.getElementById('pLegal').value;
+    let fDead = document.getElementById('fDead').checked;
+    let mDead = document.getElementById('mDead').checked;
+    let today = new Date().toISOString().split('T')[0];
+
+    if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("البيانات الأساسية ناقصة! الرجاء إكمال جميع الخانات الإجبارية.");
+    if(dob >= today) return alert("تاريخ الولادة يجب أن يكون في الماضي!");
+    if((pLegal==='الأب' && fDead) || (pLegal==='الأم' && mDead)) return alert("لا يمكن اختيار ولي متوفى كمسؤول!");
+    if(document.getElementById('regPaySys').value !== 'مجاني' && fee <= 0) return alert("يجب إدخال معلوم مالي!");
+
+    isSaving = true;
+
+    let pickup = [];
+    document.querySelectorAll('.pickup-row').forEach(r => { if(r.querySelector('.pName').value) pickup.push({n:r.querySelector('.pName').value, p:r.querySelector('.pPhone').value}); });
+    
+    let docsReceived = [];
+    document.querySelectorAll('.doc-check:checked').forEach(c => docsReceived.push(c.value));
+
+    let s = {
+        id: editingId ? editingId : Date.now(), // نحافظو على نفس الـ ID كانو تحيين
+        name, dob, gen,
+        photo: document.getElementById('photoPreview').src || null,
+        f: { d: fDead, n: document.getElementById('fName').value, p: document.getElementById('fPhone').value },
+        m: { d: mDead, n: document.getElementById('mName').value, p: document.getElementById('mPhone').value },
+        legal: pLegal,
+        life: { meals: document.getElementById('regMeals').value, att: document.getElementById('regAttendance').value, cls: document.getElementById('regClass').value },
+        trans: { active: document.getElementById('regTrans').value==='نعم', route: document.getElementById('transRoute').value, fee: parseFloat(document.getElementById('transFee').value)||0, driver: document.getElementById('transDriver').value },
+        fin: { sys: document.getElementById('regPaySys').value, fee: parseFloat(fee) },
+        rights: document.getElementById('cImageRights').checked,
+        docs: docsReceived,
+        pickup: pickup
+    };
+
+    if(editingId) {
+        // إذا تحيين، نعوضو النسخة القديمة بالجديدة
+        let index = students.findIndex(st => st.id === editingId);
+        if(index !== -1) students[index] = s;
+    } else {
+        // إذا تسجيل جديد
+        students.push(s);
+    }
+    
+    db.ref('GestionPetitAnge/students').set(students).then(() => {
+        alert(editingId ? "تم التحيين بنجاح!" : "تم الحفظ بنجاح في قاعدة البيانات!"); 
+        
+        // تنظيف الفورم وإرجاع الزر لحالته الأصلية
+        document.getElementById('cName').value = '';
+        document.getElementById('photoPreview').src = '';
+        document.getElementById('photoPreview').style.display = 'none';
+        document.getElementById('photoPlaceholder').style.display = 'flex';
+        
+        editingId = null;
+        let saveBtn = document.querySelector('#registration .main-btn');
+        saveBtn.innerHTML = "💾 حفظ وحفظ التلميذ";
+        saveBtn.style.background = "var(--primary-gradient)";
+        
+        isSaving = false;
+        show('home', document.querySelector('.nav-buttons button'));
+    }).catch(err => {
+        isSaving = false;
+        alert("صار خطأ في الحفظ: " + err.message);
+    });
+}
+
+// 1. دالة عرض الملف (محدثة بالأزرار الجديدة)
+function viewProfile(id) {
+    let s = students.find(x => x.id === id);
+    let p = s.legal === 'الأب' ? s.f : s.m;
+    let photoHtml = s.photo ? `<img src="${s.photo}" style="width:100px; height:100px; border-radius:50%; cursor:pointer;" onclick="zoomImg('${s.photo}')">` : `<div style="width:100px; height:100px; border-radius:50%; background:#ddd; line-height:100px; font-size:40px;">👤</div>`;
+    
+    let html = `
+        <div style="text-align:center; margin-bottom:15px;">${photoHtml}<h3>${s.name}</h3></div>
+        <div style="font-size:13px; line-height:1.6; background:#f9f9f9; padding:15px; border-radius:10px;">
+            <b>القسم:</b> ${s.life.cls} | <b>الجنس:</b> ${s.gen}<br>
+            <b>تاريخ الولادة:</b> ${s.dob}<br>
+            <b>الولي:</b> ${p.n} (<a href="tel:${p.p}">${p.p}</a>)<br>
+            <b>النظام:</b> ${s.life.att} | <b>اللمجة/الوجبات:</b> ${s.life.meals}<br>
+            <hr>
+            <b>النقل:</b> ${s.trans.active ? `✅ ${s.trans.route} (${s.trans.fee} د.ت)` : '❌ لا يوجد'}<br>
+            <b>الاصطحاب:</b> ${s.pickup && s.pickup.length > 0 ? s.pickup.map(x=>x.n).join(', ') : 'الأبوين فقط'}<br>
+            <hr>
+            <b>الوثائق الناقصة:</b> ${settings.docs && s.docs ? settings.docs.filter(d => !s.docs.includes(d)).join(', ') : '✅ كاملة'}<br>
+            
+            <div class="modal-actions-container">
+                <button class="btn-modal btn-edit" onclick="editStudent(${s.id})">✏️ تحيين معطيات التلميذ</button>
+                ${s.rights ? `<button class="btn-modal btn-print" onclick="printContract(${s.id})">🖨️ طباعة ترخيص الصورة</button>` : ''}
+                <button class="btn-modal btn-delete" onclick="delStu(${s.id})">🗑️ حذف التلميذ نهائياً</button>
+            </div>
+        </div>
+    `;
+    document.getElementById('profileData').innerHTML = html;
+    document.getElementById('profileModal').style.display = 'flex';
+}
+
+// 2. دالة التحيين الجديدة (تهزك للفورم وتعمرو)
+function editStudent(id) {
+    let s = students.find(x => x.id === id);
+    if(!s) return;
+    
+    editingId = id; // نسجلو الـ ID باش كي نحفظو نعرفوه تحيين
+    
+    // تعمير البيانات الأساسية
+    document.getElementById('cName').value = s.name;
+    document.getElementById('cDOB').value = s.dob;
+    document.getElementById('cGender').value = s.gen;
+    document.getElementById('photoPreview').src = s.photo || '';
+    document.getElementById('photoPreview').style.display = s.photo ? 'block' : 'none';
+    document.getElementById('photoPlaceholder').style.display = s.photo ? 'none' : 'flex';
+    
+    // تعمير الأبوين
+    document.getElementById('fDead').checked = s.f.d; toggleP('f');
+    document.getElementById('fName').value = s.f.n || '';
+    document.getElementById('fPhone').value = s.f.p || '';
+    document.getElementById('mDead').checked = s.m.d; toggleP('m');
+    document.getElementById('mName').value = s.m.n || '';
+    document.getElementById('mPhone').value = s.m.p || '';
+    document.getElementById('pLegal').value = s.legal;
+    
+    // النظام والوجبات
+    document.getElementById('regMeals').value = s.life.meals;
+    document.getElementById('regAttendance').value = s.life.att;
+    document.getElementById('regClass').value = s.life.cls;
+    
+    // النقل
+    document.getElementById('regTrans').value = s.trans.active ? 'نعم' : 'لا';
+    document.getElementById('transFields').style.display = s.trans.active ? 'block' : 'none';
+    document.getElementById('transRoute').value = s.trans.route || '';
+    document.getElementById('transFee').value = s.trans.fee || '';
+    document.getElementById('transDriver').value = s.trans.driver || '';
+    
+    // المالية والصورة
+    document.getElementById('regPaySys').value = s.fin.sys;
+    document.getElementById('regFee').value = s.fin.fee || '';
+    document.getElementById('cImageRights').checked = s.rights;
+    
+    // الوثائق
+    document.querySelectorAll('.doc-check').forEach(c => c.checked = false);
+    if(s.docs) { s.docs.forEach(d => { let chk = document.querySelector(`.doc-check[value="${d}"]`); if(chk) chk.checked = true; }); }
+    
+    // الاصطحاب
+    document.getElementById('pickupBox').innerHTML = '';
+    if(s.pickup && s.pickup.length > 0) {
+        s.pickup.forEach(p => {
+            let div = document.createElement('div'); div.className = 'pickup-row';
+            div.innerHTML = `<input type="text" class="pName" placeholder="الإسم" value="${p.n}"><input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;" value="${p.p}"><button onclick="this.parentElement.remove()" style="color:red; background:none; border:none;">X</button>`;
+            document.getElementById('pickupBox').appendChild(div);
+        });
+    } else { addPickup(); }
+    
+    // تبديل الواجهة وتغيير زر الحفظ
+    document.getElementById('profileModal').style.display = 'none';
+    show('registration', document.querySelectorAll('.nav-buttons button')[1]);
+    let saveBtn = document.querySelector('#registration .main-btn');
+    saveBtn.innerHTML = "💾 تحيين وحفظ التعديلات";
+    saveBtn.style.background = "linear-gradient(135deg, #ff9800 0%, #e65100 100%)";
+}
+
+// 3. دالة الحفظ المحدثة (تفرق بين تسجيل جديد وتحيين)
+function saveStudent() {
+    if(isSaving) return;
+
+    let name = document.getElementById('cName').value.trim();
+    let dob = document.getElementById('cDOB').value;
+    let gen = document.getElementById('cGender').value;
+    let fee = document.getElementById('regFee').value;
+    let pLegal = document.getElementById('pLegal').value;
+    let fDead = document.getElementById('fDead').checked;
+    let mDead = document.getElementById('mDead').checked;
+    let today = new Date().toISOString().split('T')[0];
+
+    if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("البيانات الأساسية ناقصة! الرجاء إكمال جميع الخانات الإجبارية.");
+    if(dob >= today) return alert("تاريخ الولادة يجب أن يكون في الماضي!");
+    if((pLegal==='الأب' && fDead) || (pLegal==='الأم' && mDead)) return alert("لا يمكن اختيار ولي متوفى كمسؤول!");
+    if(document.getElementById('regPaySys').value !== 'مجاني' && fee <= 0) return alert("يجب إدخال معلوم مالي!");
+
+    isSaving = true;
+
+    let pickup = [];
+    document.querySelectorAll('.pickup-row').forEach(r => { if(r.querySelector('.pName').value) pickup.push({n:r.querySelector('.pName').value, p:r.querySelector('.pPhone').value}); });
+    
+    let docsReceived = [];
+    document.querySelectorAll('.doc-check:checked').forEach(c => docsReceived.push(c.value));
+
+    let s = {
+        id: editingId ? editingId : Date.now(), // نحافظو على نفس الـ ID كانو تحيين
+        name, dob, gen,
+        photo: document.getElementById('photoPreview').src || null,
+        f: { d: fDead, n: document.getElementById('fName').value, p: document.getElementById('fPhone').value },
+        m: { d: mDead, n: document.getElementById('mName').value, p: document.getElementById('mPhone').value },
+        legal: pLegal,
+        life: { meals: document.getElementById('regMeals').value, att: document.getElementById('regAttendance').value, cls: document.getElementById('regClass').value },
+        trans: { active: document.getElementById('regTrans').value==='نعم', route: document.getElementById('transRoute').value, fee: parseFloat(document.getElementById('transFee').value)||0, driver: document.getElementById('transDriver').value },
+        fin: { sys: document.getElementById('regPaySys').value, fee: parseFloat(fee) },
+        rights: document.getElementById('cImageRights').checked,
+        docs: docsReceived,
+        pickup: pickup
+    };
+
+    if(editingId) {
+        // إذا تحيين، نعوضو النسخة القديمة بالجديدة
+        let index = students.findIndex(st => st.id === editingId);
+        if(index !== -1) students[index] = s;
+    } else {
+        // إذا تسجيل جديد
+        students.push(s);
+    }
+    
+    db.ref('GestionPetitAnge/students').set(students).then(() => {
+        alert(editingId ? "تم التحيين بنجاح!" : "تم الحفظ بنجاح في قاعدة البيانات!"); 
+        
+        // تنظيف الفورم وإرجاع الزر لحالته الأصلية
+        document.getElementById('cName').value = '';
+        document.getElementById('photoPreview').src = '';
+        document.getElementById('photoPreview').style.display = 'none';
+        document.getElementById('photoPlaceholder').style.display = 'flex';
+        
+        editingId = null;
+        let saveBtn = document.querySelector('#registration .main-btn');
+        saveBtn.innerHTML = "💾 حفظ وحفظ التلميذ";
+        saveBtn.style.background = "var(--primary-gradient)";
+        
+        isSaving = false;
+        show('home', document.querySelector('.nav-buttons button'));
+    }).catch(err => {
+        isSaving = false;
+        alert("صار خطأ في الحفظ: " + err.message);
+    });
+}
 function zoomImg(src) { document.getElementById('fullImage').src = src; document.getElementById('imageModal').style.display = 'flex'; }
 
 function delStu(id) { 
