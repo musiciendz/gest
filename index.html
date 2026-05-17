@@ -340,7 +340,11 @@ function addPickup() {
     document.getElementById('pickupBox').appendChild(div);
 }
 
+let isSaving = false; // 🛑 زدنا هذي باش نمنعوا التكرار
+
 function saveStudent() {
+    if(isSaving) return; // كان قاعد يسجل، ما يعمل شيء كي تنزل مرة أخرى
+
     let name = document.getElementById('cName').value.trim();
     let dob = document.getElementById('cDOB').value;
     let gen = document.getElementById('cGender').value;
@@ -350,10 +354,13 @@ function saveStudent() {
     let mDead = document.getElementById('mDead').checked;
     let today = new Date().toISOString().split('T')[0];
 
+    // التثبت من البيانات
     if(!name || !dob || !gen || !document.getElementById('regClass').value) return alert("البيانات الأساسية ناقصة! الرجاء إكمال جميع الخانات الإجبارية.");
     if(dob >= today) return alert("تاريخ الولادة يجب أن يكون في الماضي!");
     if((pLegal==='الأب' && fDead) || (pLegal==='الأم' && mDead)) return alert("لا يمكن اختيار ولي متوفى كمسؤول!");
     if(document.getElementById('regPaySys').value !== 'مجاني' && fee <= 0) return alert("يجب إدخال معلوم مالي!");
+
+    isSaving = true; // 🛑 نبلوكيو الزر توة باش ما يتعاودش التسجيل
 
     let pickup = [];
     document.querySelectorAll('.pickup-row').forEach(r => { if(r.querySelector('.pName').value) pickup.push({n:r.querySelector('.pName').value, p:r.querySelector('.pPhone').value}); });
@@ -375,6 +382,18 @@ function saveStudent() {
         pickup: pickup
     };
 
+    students.push(s);
+    
+    db.ref('GestionPetitAnge/students').set(students).then(() => {
+        alert("تم الحفظ بنجاح في قاعدة البيانات!"); 
+        document.getElementById('cName').value = '';
+        isSaving = false; // 🛑 نرجعو نحلو البلوكاج بعد ما يكمل يسجل
+        show('home', document.querySelector('.nav-buttons button'));
+    }).catch(err => {
+        isSaving = false; // 🛑 نرجعو نحلو البلوكاج حتى كان صار خطأ
+        alert("صار خطأ في الحفظ: " + err.message);
+    });
+}
     students.push(s);
     
     db.ref('GestionPetitAnge/students').set(students).then(() => {
