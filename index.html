@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
 :root {
@@ -244,9 +246,49 @@ input, select, textarea { width: 100%; padding: 12px; margin-bottom: 12px; borde
 </div>
 
 <script>
-let students = JSON.parse(localStorage.getItem('h_studs') || '[]');
-let settings = JSON.parse(localStorage.getItem('h_sets') || '{"docs":["مضمون ولادة","دفتر تلاقيح","شهادة طبية"],"primaryColor":"#0d6efd"}');
-let payments = JSON.parse(localStorage.getItem('h_pays') || '[]');
+// 1. إعدادات Firebase (نفسها الموجودة في تطبيقة Becha Events)
+const firebaseConfig = {
+    apiKey: "AIzaSyCTTjp34QhF6MPNemwKhoq7385xnJKK_Hg",
+    authDomain: "becha-events-kids.firebaseapp.app",
+    databaseURL: "https://becha-events-kids-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "becha-events-kids",
+    storageBucket: "becha-events-kids.appspot.com",
+    messagingSenderId: "763935242130",
+    appId: "1:763935242130:web:490a99e38c53ba0240f34b"
+};
+
+// تهيئة فايربيس
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+// متغيرات البيانات
+let students = [];
+let settings = {"docs":["مضمون ولادة","دفتر تلاقيح","شهادة طبية"],"primaryColor":"#0d6efd"};
+let payments = [];
+
+// 2. جلب البيانات من Firebase بشكل لحظي (Realtime)
+function loadDataFromFirebase() {
+    // جلب الإعدادات
+    db.ref('SchoolManagement/settings').on('value', snap => {
+        if(snap.exists()) {
+            settings = snap.val();
+            applySets();
+            document.getElementById('setInstName').value = settings.instName || '';
+            document.getElementById('setInstAddr').value = settings.instAddr || '';
+            document.getElementById('setPrimaryColor').value = settings.primaryColor || '#0d6efd';
+        } else {
+            applySets(); // تطبيق الإعدادات الافتراضية إذا كانت قاعدة البيانات فارغة
+        }
+    });
+
+    // جلب قائمة التلاميذ
+    db.ref('SchoolManagement/students').on('value', snap => {
+        students = snap.val() || [];
+        render(); // تحديث الواجهة أوتوماتيكياً كل ما تتزاد حاجة
+    });
+}
 
 function applySets() {
     document.documentElement.style.setProperty('--primary-color', settings.primaryColor);
@@ -262,18 +304,26 @@ function applySets() {
 function renderDocs() {
     let box = document.getElementById('docsManagerBox');
     let regBox = document.getElementById('regDocsBox');
+    if(!box || !regBox) return;
     box.innerHTML = ''; regBox.innerHTML = '';
-    settings.docs.forEach((d, i) => {
-        box.innerHTML += `<div class="doc-row">${d} <button onclick="delDoc(${i})" style="color:red; background:none; border:none; margin-right:auto;">🗑</button></div>`;
-        regBox.innerHTML += `<label><input type="checkbox" class="doc-check" value="${d}"> ${d}</label><br>`;
-    });
+    if(settings.docs){
+        settings.docs.forEach((d, i) => {
+            box.innerHTML += `<div class="doc-row">${d} <button onclick="delDoc(${i})" style="color:red; background:none; border:none; margin-right:auto;">🗑</button></div>`;
+            regBox.innerHTML += `<label><input type="checkbox" class="doc-check" value="${d}"> ${d}</label><br>`;
+        });
+    }
 }
 
 function addDocType() {
     let val = document.getElementById('newDocName').value;
-    if(val) { settings.docs.push(val); document.getElementById('newDocName').value=''; renderDocs(); }
+    if(val) { 
+        if(!settings.docs) settings.docs = [];
+        settings.docs.push(val); 
+        document.getElementById('newDocName').value=''; 
+        saveSettings(); // حفظ في فايربيس
+    }
 }
-function delDoc(i) { settings.docs.splice(i,1); renderDocs(); }
+function delDoc(i) { settings.docs.splice(i,1); saveSettings(); }
 
 function previewImg(e) {
     let reader = new FileReader();
@@ -321,14 +371,23 @@ function saveStudent() {
         legal: pLegal,
         life: { meals: document.getElementById('regMeals').value, att: document.getElementById('regAttendance').value, cls: document.getElementById('regClass').value },
         trans: { active: document.getElementById('regTrans').value==='نعم', route: document.getElementById('transRoute').value, fee: parseFloat(document.getElementById('transFee').value)||0, driver: document.getElementById('transDriver').value },
-        fin: { sys: document.getElementById('regPaySys').value, fee: parseFloat(fee), day: document.getElementById('regPayDay').value },
+        fin: { sys: document.getElementById('regPaySys').value, fee: parseFloat(fee) },
         rights: document.getElementById('cImageRights').checked,
-        docs: docsReceived
+        docs: docsReceived,
+        pickup: pickup
     };
 
     students.push(s);
-    localStorage.setItem('h_studs', JSON.stringify(students));
-    alert("تم الحفظ!"); location.reload();
+    
+    // حفظ في Firebase
+    db.ref('SchoolManagement/students').set(students).then(() => {
+        alert("تم الحفظ بنجاح في قاعدة البيانات!"); 
+        // تنظيف الفورم
+        document.getElementById('cName').value = '';
+        show('home', document.querySelector('.nav-buttons button'));
+    }).catch(err => {
+        alert("صار خطأ في الحفظ: " + err.message);
+    });
 }
 
 function viewProfile(id) {
@@ -344,9 +403,9 @@ function viewProfile(id) {
             <b>النظام:</b> ${s.life.att} | <b>الوجبات:</b> ${s.life.meals}<br>
             <hr>
             <b>النقل:</b> ${s.trans.active ? `✅ ${s.trans.route} (${s.trans.fee} د.ت)` : '❌ لا يوجد'}<br>
-            <b>الاصطحاب:</b> ${s.pickup.length > 0 ? s.pickup.map(x=>x.n).join(', ') : 'الأبوين فقط'}<br>
+            <b>الاصطحاب:</b> ${s.pickup && s.pickup.length > 0 ? s.pickup.map(x=>x.n).join(', ') : 'الأبوين فقط'}<br>
             <hr>
-            <b>الوثائق الناقصة:</b> ${settings.docs.filter(d => !s.docs.includes(d)).join(', ') || '✅ كاملة'}<br>
+            <b>الوثائق الناقصة:</b> ${settings.docs && s.docs ? settings.docs.filter(d => !s.docs.includes(d)).join(', ') : '✅ كاملة'}<br>
             <hr>
             ${s.rights ? `<button class="action-btn btn-outline" style="width:100%;" onclick="printContract(${s.id})">🖨️ طباعة ترخيص الصورة</button>` : ''}
             <button class="action-btn btn-red" style="width:100%; margin-top:10px;" onclick="delStu(${s.id})">🗑 حذف التلميذ</button>
@@ -357,7 +416,13 @@ function viewProfile(id) {
 }
 
 function zoomImg(src) { document.getElementById('fullImage').src = src; document.getElementById('imageModal').style.display = 'flex'; }
-function delStu(id) { if(confirm("حذف نهائي؟")) { students = students.filter(x=>x.id!==id); localStorage.setItem('h_studs', JSON.stringify(students)); location.reload(); } }
+function delStu(id) { 
+    if(confirm("حذف نهائي من قاعدة البيانات؟")) { 
+        students = students.filter(x=>x.id!==id); 
+        db.ref('SchoolManagement/students').set(students);
+        document.getElementById('profileModal').style.display = 'none';
+    } 
+}
 
 function printContract(id) {
     let s = students.find(x => x.id === id);
@@ -381,8 +446,12 @@ function saveSettings() {
     settings.instName = document.getElementById('setInstName').value;
     settings.instAddr = document.getElementById('setInstAddr').value;
     settings.primaryColor = document.getElementById('setPrimaryColor').value;
-    localStorage.setItem('h_sets', JSON.stringify(settings));
-    applySets(); alert("تم الحفظ!");
+    
+    // حفظ في Firebase
+    db.ref('SchoolManagement/settings').set(settings).then(() => {
+        applySets(); 
+        alert("تم حفظ الإعدادات في فايربيس!");
+    });
 }
 
 function uploadLogo(e) {
@@ -401,13 +470,14 @@ function show(id, btn) {
 
 function render() {
     let list = document.getElementById('studentsList');
-    let fSel = document.getElementById('finStudentSelect');
     if(!list) return;
-    list.innerHTML = ''; fSel.innerHTML = '<option disabled selected>-- اختر التلميذ --</option>';
+    list.innerHTML = ''; 
     document.getElementById('stat-count').innerText = students.length;
     
+    // حساب المداخيل التقريبية
+    let totalMoney = 0;
     students.forEach(s => {
-        fSel.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+        if(s.fin && s.fin.fee) totalMoney += s.fin.fee;
         list.innerHTML += `
             <div class="card" onclick="viewProfile(${s.id})">
                 ${s.photo ? `<img src="${s.photo}" class="card-img">` : `<div class="card-img" style="background:#eee; text-align:center; line-height:50px; font-size:20px;">👤</div>`}
@@ -419,18 +489,19 @@ function render() {
             </div>
         `;
     });
+    document.getElementById('stat-money').innerText = totalMoney + " د.ت";
 }
 
 setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('ar-TN'); }, 1000);
+
 window.onload = () => {
-    applySets();
-    document.getElementById('setInstName').value = settings.instName || '';
-    document.getElementById('setInstAddr').value = settings.instAddr || '';
-    document.getElementById('setPrimaryColor').value = settings.primaryColor;
-    render();
+    // بمجرد تحميل الصفحة، نربطو بفايربيس لجلب البيانات
+    loadDataFromFirebase();
 };
 
-function exportData() { window.location.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({students, settings})); }
+function exportData() { 
+    window.location.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({students, settings})); 
+}
 </script>
 </body>
 </html>
