@@ -14,21 +14,20 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
-/* 🎨 لوحة الألوان الطفولية والمرحة */
+/* 🎨 لوحة الألوان المقتبسة من الشعار (الأزرق الملكي والذهبي) */
 :root {
-    --primary-color: #FF9800; /* برتقالي مرح */
-    --secondary-color: #00BCD4; /* أزرق سماوي */
-    --accent-color: #FF5252; /* وردي/أحمر خفيف */
-    --success-color: #8BC34A; /* أخضر تفاحي */
-    --light-bg: #F4FAFF; /* أزرق فاتح جداً للخلفية */
+    --primary-color: #1A365D; /* أزرق داكن ملكي */
+    --secondary-color: #FFB300; /* أصفر / ذهبي */
+    --accent-color: #FF5252; /* أحمر للتنبيهات */
+    --success-color: #4CAF50; /* أخضر للنجاح */
+    --light-bg: #F4FAFF; /* خلفية سماوية فاتحة جداً مريحة للعين */
     --white: #ffffff;
-    --dark-text: #444;
+    --dark-text: #333333;
 }
 
 body {
     font-family: 'Cairo', sans-serif;
     background-color: var(--light-bg);
-    /* خلفية منقطة خفيفة جداً تعطي طابع طفولي */
     background-image: radial-gradient(#d4e8f9 2px, transparent 2px);
     background-size: 30px 30px;
     color: var(--dark-text);
@@ -36,107 +35,104 @@ body {
     padding-bottom: 40px;
 }
 
-/* 🎈 تصميم الهيدر (رأس الصفحة) */
+/* 🎈 تصميم الهيدر */
 header {
     background: var(--white);
-    box-shadow: 0 4px 15px rgba(0,188,212,0.1);
+    box-shadow: 0 4px 15px rgba(26, 54, 93, 0.1);
     position: sticky; top: 0; z-index: 100;
     padding-top: env(safe-area-inset-top); 
-    border-bottom: 4px dashed var(--secondary-color);
-    border-radius: 0 0 25px 25px; /* حواف سفلية دائرية */
+    border-bottom: 4px solid var(--secondary-color);
+    border-radius: 0 0 25px 25px;
     margin-bottom: 15px;
 }
 
 .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
 .logo-container { display: flex; align-items: center; gap: 12px; }
-.logo-img { max-height: 55px; border-radius: 50%; border: 3px solid var(--primary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; object-fit: contain; }
-.logo-text { color: var(--secondary-color); font-size: 22px; font-weight: 900; letter-spacing: 1px; }
+.logo-img { max-height: 50px; border-radius: 50%; border: 2px solid var(--secondary-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: white; object-fit: contain; }
+.logo-text { color: var(--primary-color); font-size: 22px; font-weight: 900; letter-spacing: 1px; }
 
-/* 🌟 أزرار التنقل (على شكل فقاعات) */
+/* 🌟 أزرار التنقل */
 .nav-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px 15px 15px; }
 .nav-buttons button { 
-    background: var(--light-bg); color: #666; border: 2px solid #e0f0ff; 
+    background: var(--light-bg); color: var(--primary-color); border: 2px solid #e0f0ff; 
     padding: 10px 15px; font-size: 14px; font-weight: 800; 
     border-radius: 25px; flex: 1 1 auto; font-family: 'Cairo'; 
     cursor: pointer; transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .nav-buttons button.active-nav { 
-    background: var(--primary-color); color: var(--white); 
+    background: var(--primary-color); color: var(--secondary-color); 
     border-color: var(--primary-color); 
-    transform: scale(1.05); box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3); 
+    transform: scale(1.05); box-shadow: 0 4px 10px rgba(26, 54, 93, 0.3); 
 }
 
 .section { display: none; padding: 10px 15px; max-width: 650px; margin: 0 auto; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .active { display: block; }
 
-/* تأثير الدخول النطّاط (Bouncy) */
 @keyframes popIn { 
     from { opacity: 0; transform: translateY(20px) scale(0.95); } 
     to { opacity: 1; transform: translateY(0) scale(1); } 
 }
 
-h2 { color: var(--secondary-color); font-size: 20px; font-weight: 900; border-bottom: 3px dotted var(--secondary-color); padding-bottom: 8px; margin-bottom: 20px; display: inline-block; }
+h2 { color: var(--primary-color); font-size: 20px; font-weight: 900; border-bottom: 3px solid var(--secondary-color); padding-bottom: 8px; margin-bottom: 20px; display: inline-block; }
 
 /* 📦 البطاقات والخانات */
 .form-section { 
     background: var(--white); padding: 20px; border-radius: 20px; 
-    margin-bottom: 20px; border: 3px solid #eef5fb; 
+    margin-bottom: 20px; border: 2px solid #eef5fb; 
     box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative;
 }
-.form-section h3 { margin-top: 0; color: var(--primary-color); font-size: 16px; font-weight: 900; border-bottom: 2px dashed #ffe0b2; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+.form-section h3 { margin-top: 0; color: var(--primary-color); font-size: 16px; font-weight: 900; border-bottom: 2px dashed #e0f0ff; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
 .input-label { display: block; font-size: 14px; color: #555; margin-bottom: 8px; font-weight: 800; }
 input, select, textarea { 
     width: 100%; padding: 14px; margin-bottom: 15px; 
     border-radius: 15px; border: 2px solid #e0e0e0; 
     font-family: 'Cairo'; font-size: 15px; font-weight: 600; 
-    box-sizing: border-box; transition: 0.3s; background: #fafafa;
+    box-sizing: border-box; transition: 0.3s; background: #fafafa; color: var(--primary-color);
 }
-input:focus, select:focus { border-color: var(--secondary-color); background: var(--white); outline: none; box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1); }
+input:focus, select:focus { border-color: var(--secondary-color); background: var(--white); outline: none; box-shadow: 0 0 0 4px rgba(255, 179, 0, 0.15); }
 
-.photo-upload-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; background: var(--white); padding: 20px; border-radius: 20px; border: 3px dashed #bbdefb; }
+.photo-upload-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; background: var(--white); padding: 20px; border-radius: 20px; border: 3px dashed var(--secondary-color); }
 #photoPreview { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; border: 4px solid var(--primary-color); display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-.photo-placeholder { width: 120px; height: 120px; border-radius: 50%; background: #e1f5fe; color: #00BCD4; display: flex; align-items: center; justify-content: center; font-size: 50px; margin-bottom: 15px; border: 4px dashed #81d4fa; }
+.photo-placeholder { width: 120px; height: 120px; border-radius: 50%; background: #e1f5fe; color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 50px; margin-bottom: 15px; border: 4px dashed #81d4fa; }
 
 /* 🔘 الأزرار الرئيسية */
 .main-btn { 
-    background: linear-gradient(135deg, var(--success-color) 0%, #7cb342 100%); 
-    color: var(--white); width: 100%; padding: 16px; border: none; border-radius: 20px; 
+    background: var(--secondary-color); color: var(--primary-color); 
+    width: 100%; padding: 16px; border: none; border-radius: 20px; 
     cursor: pointer; font-weight: 900; font-size: 18px; 
-    box-shadow: 0 6px 15px rgba(139, 195, 74, 0.4); transition: 0.2s;
+    box-shadow: 0 6px 15px rgba(255, 179, 0, 0.3); transition: 0.2s;
     display: flex; justify-content: center; align-items: center; gap: 10px;
 }
 .main-btn:active { transform: scale(0.95); }
 
-/* 🧸 بطاقات التلاميذ (قائمة الرئيسية) */
+/* 🧸 بطاقات التلاميذ */
 .card { 
     background: var(--white); padding: 15px; margin-bottom: 15px; 
     border-radius: 20px; border: 2px solid #eef5fb; 
     display: flex; align-items: center; gap: 15px; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s;
-    cursor: pointer;
+    cursor: pointer; border-right: 6px solid var(--secondary-color);
 }
-.card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--secondary-color); }
+.card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--primary-color); }
 .card-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #e0f0ff; background: #f0f8ff; }
 
 .pickup-row, .doc-row { display: flex; gap: 10px; margin-bottom: 12px; background: #fdfdfd; padding: 12px; border-radius: 15px; border: 2px solid #f0f0f0; align-items: center; }
 
 /* 🪟 النوافذ المنبثقة (Modals) */
-#profileModal, #imageModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 25, 40, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; backdrop-filter: blur(5px); }
-#profileContent { background: var(--white); width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 25px; padding: 25px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.3s ease; }
+#profileModal, #imageModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 54, 93, 0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; backdrop-filter: blur(5px); }
+#profileContent { background: var(--white); width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 25px; padding: 25px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.2); animation: popIn 0.3s ease; border: 4px solid var(--secondary-color); }
 
-.badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: 900; color: white; }
+.badge { padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: 900; color: var(--primary-color); background: var(--secondary-color); }
 
 /* 🛠️ أزرار نافذة ملف التلميذ */
 .modal-actions-container { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; border-top: 2px dashed #eee; padding-top: 20px; }
 .btn-modal { width: 100%; padding: 14px; border-radius: 15px; font-weight: 900; cursor: pointer; border: none; font-family: 'Cairo'; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 .btn-modal:active { transform: scale(0.96); }
-.btn-edit { background: var(--primary-color); color: var(--white); box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3); }
-.btn-print { background: var(--secondary-color); color: var(--white); box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3); }
-.btn-delete { background: var(--accent-color); color: var(--white); box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3); }
+.btn-edit { background: var(--secondary-color); color: var(--primary-color); }
+.btn-print { background: var(--primary-color); color: var(--white); }
+.btn-delete { background: var(--accent-color); color: var(--white); }
 
-/* إحصائيات الرئيسية */
-.stat-box { background: var(--white); padding: 20px; border-radius: 20px; text-align: center; border: 3px solid #eef5fb; box-shadow: 0 4px 10px rgba(0,0,0,0.03); flex: 1; }
 </style>
 </head>
 <body>
@@ -144,7 +140,7 @@ input:focus, select:focus { border-color: var(--secondary-color); background: va
 <div id="imageModal" onclick="this.style.display='none'">
     <div style="max-width: 90%; max-height: 80%; background: #fff; padding: 10px; border-radius: 20px;">
         <img id="fullImage" src="" style="width: 100%; border-radius: 15px;">
-        <p style="text-align: center; margin: 10px 0; font-weight: bold; color: #333;">إضغط في أي مكان للإغلاق</p>
+        <p style="text-align: center; margin: 10px 0; font-weight: bold; color: var(--primary-color);">إضغط في أي مكان للإغلاق</p>
     </div>
 </div>
 
@@ -157,10 +153,10 @@ input:focus, select:focus { border-color: var(--secondary-color); background: va
 
 <header>
     <div class="top-bar">
-        <div id="live-clock" style="font-weight: 900; color: var(--secondary-color); background: #e0f7fa; padding: 5px 12px; border-radius: 15px; font-size: 14px;"></div>
+        <div id="live-clock" style="font-weight: 900; color: var(--primary-color); background: var(--secondary-color); padding: 5px 12px; border-radius: 15px; font-size: 14px;"></div>
         <div class="logo-container">
             <img id="headerLogo" class="logo-img" src="logo.png" alt="Logo">
-            <div id="headerText" class="logo-text">روضة P'tit Ange</div>
+            <div id="headerText" class="logo-text">P'tit Ange</div>
         </div>
     </div>
     <div class="nav-buttons">
@@ -172,18 +168,12 @@ input:focus, select:focus { border-color: var(--secondary-color); background: va
 </header>
 
 <div id="home" class="section active">
-    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
-        <div class="stat-box" style="border-bottom: 5px solid var(--secondary-color);">
-            <div style="font-size: 30px; margin-bottom: 5px;">🎈</div>
-            <div style="font-size: 13px; color: #888; font-weight:bold;">عدد التلاميذ</div>
-            <div id="stat-count" style="font-size: 26px; font-weight: 900; color: var(--secondary-color);">0</div>
-        </div>
-        <div class="stat-box" style="border-bottom: 5px solid var(--success-color);">
-            <div style="font-size: 30px; margin-bottom: 5px;">🪙</div>
-            <div style="font-size: 13px; color: #888; font-weight:bold;">المداخيل</div>
-            <div id="stat-money" style="font-size: 26px; font-weight: 900; color: var(--success-color);">0 د.ت</div>
-        </div>
+    <div style="background: white; padding: 40px 20px; border-radius: 25px; text-align: center; border: 3px solid #eef5fb; box-shadow: 0 10px 30px rgba(26, 54, 93, 0.05); margin-bottom: 30px;">
+        <img src="logo.png" id="welcomeLogo" alt="P'tit Ange" style="max-width: 220px; margin-bottom: 20px; animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <h1 style="color: var(--primary-color); font-weight: 900; margin: 0; font-size: 26px;">مرحباً بكم في فضاء P'tit Ange</h1>
+        <p style="color: #666; font-size: 15px; font-weight: bold; margin-top: 10px;">إدارة ذكية، آمنة، وعصرية لجيل المستقبل</p>
     </div>
+
     <h2>🧸 قائمة صغارنا</h2>
     <div id="studentsList"></div>
 </div>
@@ -195,7 +185,7 @@ input:focus, select:focus { border-color: var(--secondary-color); background: va
         <div id="photoPlaceholder" class="photo-placeholder">👧🧒</div>
         <img id="photoPreview" src="">
         <input type="file" id="cPhoto" accept="image/*" onchange="previewImg(event)" style="display:none;">
-        <button class="btn-modal" style="background: #e1f5fe; color: var(--secondary-color); border: 2px dashed var(--secondary-color); width: auto; padding: 10px 20px; box-shadow:none;" onclick="document.getElementById('cPhoto').click()">📸 اختر صورة البطل(ة)</button>
+        <button class="btn-modal" style="background: #e1f5fe; color: var(--primary-color); border: 2px dashed var(--primary-color); width: auto; padding: 10px 20px; box-shadow:none;" onclick="document.getElementById('cPhoto').click()">📸 اختر صورة البطل(ة)</button>
     </div>
 
     <div class="form-section">
@@ -261,12 +251,12 @@ input:focus, select:focus { border-color: var(--secondary-color); background: va
                 <input type="tel" class="pPhone" placeholder="الهاتف" style="width:120px;">
             </div>
         </div>
-        <button class="btn-modal" style="background: #fff8e1; color: var(--primary-color); border: 2px dashed var(--primary-color); box-shadow:none;" onclick="addPickup()">➕ إضافة شخص آخر</button>
+        <button class="btn-modal" style="background: #fff8e1; color: var(--primary-color); border: 2px dashed var(--secondary-color); box-shadow:none;" onclick="addPickup()">➕ إضافة شخص آخر</button>
     </div>
 
     <div class="form-section">
         <h3>📁 6. الوثائق المستلمة</h3>
-        <div id="regDocsBox" style="font-weight:bold; color:#555;"></div>
+        <div id="regDocsBox" style="font-weight:bold; color:var(--primary-color);"></div>
     </div>
 
     <div class="form-section">
@@ -285,10 +275,10 @@ input:focus, select:focus { border-color: var(--secondary-color); background: va
 
 <div id="finance" class="section">
     <h2>💰 قسم المالية</h2>
-    <div style="background: white; padding: 30px; border-radius: 20px; text-align: center; border: 3px dashed #bbdefb;">
+    <div style="background: white; padding: 40px 20px; border-radius: 25px; text-align: center; border: 3px dashed #e0f0ff;">
         <div style="font-size:50px; margin-bottom:15px;">🚧</div>
-        <h3 style="color: var(--secondary-color); margin:0;">هذا القسم قيد التطوير</h3>
-        <p style="color: #888; font-weight: bold; margin-top:10px;">باش يكون جاهز في التحديث القادم إن شاء الله!</p>
+        <h3 style="color: var(--primary-color); margin:0;">القسم المالي محمي وقيد الإعداد</h3>
+        <p style="color: #888; font-weight: bold; margin-top:10px;">باش يكون جاهز في التحديث القادم إن شاء الله للحفاظ على سرية الحسابات!</p>
     </div>
 </div>
 
@@ -313,12 +303,12 @@ input:focus, select:focus { border-color: var(--secondary-color); background: va
         <h3>🎨 اللون الرئيسي للتطبيقة</h3>
         <input type="color" id="setPrimaryColor" style="height: 50px; padding: 5px; cursor:pointer;">
     </div>
-    <button class="btn-modal" style="background: var(--secondary-color); color: white; padding:15px; font-size:18px;" onclick="saveSettings()">💾 حفظ إعدادات الروضة</button>
-    <button class="btn-modal" style="margin-top:20px; background: #e0e0e0; color: #444; box-shadow:none;" onclick="exportData()">⬇️ تحميل نسخة احتياطية من كل البيانات</button>
+    <button class="btn-modal" style="background: var(--primary-color); color: var(--secondary-color); padding:15px; font-size:18px;" onclick="saveSettings()">💾 حفظ إعدادات الروضة</button>
+    <button class="btn-modal" style="margin-top:20px; background: #e0e0e0; color: #444; box-shadow:none;" onclick="exportData()">⬇️ تحميل نسخة احتياطية من البيانات</button>
 </div>
 
 <script>
-// 1. إعدادات Firebase (مربوطة بمشروع Becha Events)
+// 1. إعدادات Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyCTTjp34QhF6MPNemwKhoq7385xnJKK_Hg",
     authDomain: "becha-events-kids.firebaseapp.app",
@@ -337,7 +327,7 @@ const db = firebase.database();
 
 // متغيرات البيانات العامة
 let students = [];
-let settings = {"docs":["مضمون ولادة","دفتر تلاقيح","شهادة طبية"],"primaryColor":"#FF9800"};
+let settings = {"docs":["مضمون ولادة","دفتر تلاقيح","شهادة طبية"],"primaryColor":"#1A365D"};
 let editingId = null;
 let isSaving = false;
 
@@ -349,7 +339,7 @@ function loadDataFromFirebase() {
             applySets();
             if(document.getElementById('setInstName')) document.getElementById('setInstName').value = settings.instName || '';
             if(document.getElementById('setInstAddr')) document.getElementById('setInstAddr').value = settings.instAddr || '';
-            if(document.getElementById('setPrimaryColor')) document.getElementById('setPrimaryColor').value = settings.primaryColor || '#FF9800';
+            if(document.getElementById('setPrimaryColor')) document.getElementById('setPrimaryColor').value = settings.primaryColor || '#1A365D';
         } else {
             applySets(); 
         }
@@ -361,19 +351,23 @@ function loadDataFromFirebase() {
     });
 }
 
-// 3. تطبيق إعدادات الألوان والشعار (اللوغو الافتراضي logo.png)
+// 3. تطبيق إعدادات الألوان والشعار
 function applySets() {
-    document.documentElement.style.setProperty('--primary-color', settings.primaryColor || '#FF9800');
+    document.documentElement.style.setProperty('--primary-color', settings.primaryColor || '#1A365D');
     
     let logoImg = document.getElementById('headerLogo');
+    let welcomeLogo = document.getElementById('welcomeLogo');
     let headerText = document.getElementById('headerText');
     
     if(headerText) headerText.innerText = settings.instName || "روضة P'tit Ange";
     
+    let finalLogo = settings.logo || 'logo.png';
     if(logoImg) {
-        // إذا فما لوغو مسجل في الفايربيس يخدمو، وإلا يخدم logo.png من الـ GitHub
-        logoImg.src = settings.logo || 'logo.png';
+        logoImg.src = finalLogo;
         logoImg.style.display = 'block';
+    }
+    if(welcomeLogo) {
+        welcomeLogo.src = finalLogo;
     }
     
     renderDocs();
@@ -387,7 +381,7 @@ function renderDocs() {
     box.innerHTML = ''; regBox.innerHTML = '';
     if(settings.docs){
         settings.docs.forEach((d, i) => {
-            box.innerHTML += `<div class="doc-row"><span style="font-weight:bold; color:var(--secondary-color);">📄 ${d}</span> <button onclick="delDoc(${i})" style="color:red; background:#ffebee; border:none; border-radius:50%; width:30px; height:30px; margin-right:auto; cursor:pointer; font-weight:bold;">X</button></div>`;
+            box.innerHTML += `<div class="doc-row"><span style="font-weight:bold; color:var(--primary-color);">📄 ${d}</span> <button onclick="delDoc(${i})" style="color:red; background:#ffebee; border:none; border-radius:50%; width:30px; height:30px; margin-right:auto; cursor:pointer; font-weight:bold;">X</button></div>`;
             regBox.innerHTML += `<label style="display:flex; align-items:center; gap:10px; margin-bottom:10px; cursor:pointer;"><input type="checkbox" class="doc-check" value="${d}" style="width:20px; height:20px; margin:0;"> ${d}</label>`;
         });
     }
@@ -497,7 +491,7 @@ function saveStudent() {
         let saveBtn = document.querySelector('#registration .main-btn');
         if(saveBtn) {
             saveBtn.innerHTML = "💾 حفظ التلميذ";
-            saveBtn.style.background = "linear-gradient(135deg, var(--success-color) 0%, #7cb342 100%)";
+            saveBtn.style.background = "var(--secondary-color)";
         }
         
         isSaving = false;
@@ -514,15 +508,15 @@ function viewProfile(id) {
     let s = students.find(x => x.id === id);
     if(!s) return;
     let p = s.legal === 'الأب' ? s.f : s.m;
-    let photoHtml = s.photo ? `<img src="${s.photo}" style="width:110px; height:110px; border-radius:50%; cursor:pointer; object-fit:cover; border:4px solid var(--secondary-color); box-shadow:0 4px 10px rgba(0,0,0,0.1);" onclick="zoomImg('${s.photo}')">` : `<div style="width:110px; height:110px; border-radius:50%; background:#e1f5fe; color:var(--secondary-color); line-height:110px; font-size:50px; margin:0 auto; border:4px dashed #81d4fa;">👦</div>`;
+    let photoHtml = s.photo ? `<img src="${s.photo}" style="width:110px; height:110px; border-radius:50%; cursor:pointer; object-fit:cover; border:4px solid var(--secondary-color); box-shadow:0 4px 10px rgba(0,0,0,0.1);" onclick="zoomImg('${s.photo}')">` : `<div style="width:110px; height:110px; border-radius:50%; background:#e1f5fe; color:var(--primary-color); line-height:110px; font-size:50px; margin:0 auto; border:4px dashed #81d4fa;">👦</div>`;
     
     let html = `
         <div style="text-align:center; margin-bottom:20px;">${photoHtml}<h3 style="margin-top:15px; color:var(--primary-color); font-size:22px; font-weight:900;">${s.name}</h3></div>
         <div style="font-size:15px; line-height:1.8; background:#f4faff; padding:20px; border-radius:20px; border:2px solid #e0f0ff;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>القسم:</b> <span class="badge" style="background:var(--primary-color); font-size:14px;">${s.life.cls}</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>القسم:</b> <span class="badge">${s.life.cls}</span></div>
             <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>الجنس:</b> <span>${s.gen}</span></div>
             <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>تاريخ الولادة:</b> <span>${s.dob}</span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>الولي المباشر:</b> <span>${p.n || '---'} (<a href="tel:${p.p}" style="color:var(--secondary-color); font-weight:900;">${p.p || 'بدون هاتف'}</a>)</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>الولي المباشر:</b> <span>${p.n || '---'} (<a href="tel:${p.p}" style="color:var(--primary-color); font-weight:900;">${p.p || 'بدون هاتف'}</a>)</span></div>
             <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><b>نظام الحضور:</b> <span style="font-weight:bold;">${s.life.att} | ${s.life.meals}</span></div>
             
             <hr style="border:0; border-top:2px dashed #bce0fd; margin:15px 0;">
@@ -604,7 +598,8 @@ function editStudent(id) {
     let saveBtn = document.querySelector('#registration .main-btn');
     if(saveBtn) {
         saveBtn.innerHTML = "💾 تحيين وحفظ التعديلات";
-        saveBtn.style.background = "linear-gradient(135deg, #FF9800 0%, #F57C00 100%)";
+        saveBtn.style.background = "linear-gradient(135deg, #1A365D 0%, #152b4a 100%)";
+        saveBtn.style.color = "var(--secondary-color)";
     }
 }
 
@@ -623,15 +618,15 @@ function printContract(id) {
     let s = students.find(x => x.id === id);
     let p = s.legal === 'الأب' ? s.f : s.m;
     let div = document.createElement('div');
-    div.style.cssText = "position:absolute; top:0; left:0; width:550px; padding:40px; background:#fff; direction:rtl; font-family:Cairo; border:3px solid var(--secondary-color); border-radius:20px; z-index:-1;";
+    div.style.cssText = "position:absolute; top:0; left:0; width:550px; padding:40px; background:#fff; direction:rtl; font-family:Cairo; border:3px solid var(--primary-color); border-radius:20px; z-index:-1;";
     div.innerHTML = `
         <div style="text-align:center; margin-bottom:20px;">
             <img src="${settings.logo || 'logo.png'}" style="max-height:80px; margin-bottom:10px;">
             <h2 style="color:var(--primary-color); margin:0;">ترخيص أبوي في حق الصورة</h2>
         </div>
-        <p style="font-size:18px; line-height:1.8;">إني الممضي(ة) أسفله السيد(ة): <b>${p.n || '.......'}</b>، بصفتي الولي الشرعي للطفل(ة): <b style="color:var(--secondary-color);">${s.name}</b>.</p>
+        <p style="font-size:18px; line-height:1.8;">إني الممضي(ة) أسفله السيد(ة): <b>${p.n || '.......'}</b>، بصفتي الولي الشرعي للطفل(ة): <b style="color:var(--primary-color);">${s.name}</b>.</p>
         <p style="font-size:18px; line-height:1.8;">أرخص صراحة للمؤسسة التربوية: <b>"${settings.instName || "روضة P'tit Ange"}"</b>، الكائن مقرها بـ: <b>${settings.instAddr || '.......'}</b>، بالتقاط صور وفيديوهات لابني/ابنتي خلال الأنشطة التربوية والترفيهية ونشرها في الوسائط الرسمية للمؤسسة.</p>
-        <div style="margin-top:50px; display:flex; justify-content:space-between; font-weight:bold; font-size:18px;">
+        <div style="margin-top:50px; display:flex; justify-content:space-between; font-weight:bold; font-size:18px; color:var(--primary-color);">
             <span>حرر في: ${new Date().toLocaleDateString('ar-TN')}</span>
             <span>إمضاء الولي: ....................</span>
         </div>
@@ -670,35 +665,26 @@ function show(id, btn) {
     render();
 }
 
-// 12. رسم قائمة التلاميذ
+// 12. رسم قائمة التلاميذ (بدون إحصائيات مالية)
 function render() {
     let list = document.getElementById('studentsList');
     if(!list) return;
     list.innerHTML = ''; 
     
-    let countEl = document.getElementById('stat-count');
-    if(countEl) countEl.innerText = students.length;
-    
-    let totalMoney = 0;
     students.forEach(s => {
-        if(s.fin && s.fin.fee) totalMoney += s.fin.fee;
-        
         let genIcon = s.gen === 'ذكر' ? '👦' : '👧';
         
         list.innerHTML += `
             <div class="card" onclick="viewProfile(${s.id})">
-                ${s.photo ? `<img src="${s.photo}" class="card-img">` : `<div class="card-img" style="background:#e1f5fe; color:var(--secondary-color); text-align:center; line-height:60px; font-size:25px;">${genIcon}</div>`}
+                ${s.photo ? `<img src="${s.photo}" class="card-img">` : `<div class="card-img" style="background:#e1f5fe; color:var(--primary-color); text-align:center; line-height:60px; font-size:25px;">${genIcon}</div>`}
                 <div style="flex:1;">
                     <div style="font-weight:900; color:var(--primary-color); font-size:16px;">${s.name}</div>
                     <div style="font-size:12px; color:#888; font-weight:bold;">${s.life.cls} | ${s.life.att}</div>
                 </div>
-                <div class="badge" style="background:var(--success-color); box-shadow:0 2px 5px rgba(139, 195, 74, 0.4);">مُرسّم</div>
+                <div class="badge">مُرسّم</div>
             </div>
         `;
     });
-    
-    let moneyEl = document.getElementById('stat-money');
-    if(moneyEl) moneyEl.innerText = totalMoney + " د.ت";
 }
 
 // 13. تحديث الساعة
