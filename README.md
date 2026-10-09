@@ -11,6 +11,13 @@
 - حساب Firebase Auth ما عندوش سجلّ دور (`parents`، `drivers`، `tvs`، `caterers`، `anissas`) ما يقرا و ما يكتب شي، حتى لو عمل حساب بروحو.
 - سجلّات الحسابات (فيها كلمات السر) كل واحد يقرا سجلّو برك.
 - `loginIndex` يتقرا قبل الدخول، فيه كان hash الإيميل و الدور.
+- الوليّ يقرا كان أطفال عائلتو: يطلب `students` بـ `orderByChild('familyId').equalTo(عائلتو)` (الدالة `studentsRef()` في `index.html`)، و `payments/{id}` كان إذا `famIndex/{id}` = عائلتو. المدير يحافظ أوتوماتيك على `familyId` (نص) لكل طفل و على `famIndex` كل ما يتبدّل طفل.
+- ⚠️ في Firebase 8، أي طلب كامل على `students` من وليّ يترفض و يقصّ معاه حتى الطلب المفلتر. أي قراءة جديدة للأطفال لازم تمرّ بـ `studentsRef()`.
+
+### ترتيب النشر
+1. انشر `index.html` الجديد.
+2. ادخل بحساب الإدارة مرّة (يكتب `familyId` و `famIndex`).
+3. من بعد انشر القواعد.
 
 ## ملفات الصوت (موش في الريبو)
 `audio/list.json` في الريبو، أما ملفات mp3 لا (GitHub يرفض أي ملف فوق 100MB، و `audio/fairouz/01.mp3` حجمو 162MB). قبل `firebase deploy --only hosting` حطّهم في بلايصهم:

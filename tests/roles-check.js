@@ -11,7 +11,9 @@ const roles=[['admin','musiciendz@gmail.com'],['parent','parent1@ptitange.tn'],[
 (async()=>{
  const uids={}; for(const [r] of roles) uids[r]='uid_'+r;
  const st={}; for(let i=0;i<20;i++){ const id=1700000000000+i; st[id]={id,familyId:String(id-(i%3)),name:'طفل رقم '+i,dob:'2021-03-1'+(i%9),gen:'ذكر',joinDate:'2025-09-15',legal:'الأب',f:{n:'أب',p:'2'+(1000000+i)},m:{n:'أم',p:'5'+(1000000+i)},life:{cls:'تحضيري'},health:{status:'جيدة'}}; }
- const D={GestionPetitAnge:{students:st,settings:{instName:'P tit Ange'}}}; const G=D.GestionPetitAnge;
+ // بيانات قديمة كيف الإنتاج: طفل بلا familyId و طفل familyId متاعو رقم. المدير يصلّحهم كي يدخل (فهرس العائلات).
+ delete st[1700000000000].familyId; st[1700000000001].familyId=1700000000000;
+ const D={GestionPetitAnge:{students:st,settings:{instName:'P tit Ange'},payments:{'1700000000001':{'2025-09':{amount:120}},'1700000000004':{'2025-09':{amount:120}}}}}; const G=D.GestionPetitAnge;
  G.parents={[uids.parent]:{email:'parent1@ptitange.tn',password:'secret123',name:'ولي',familyId:'1700000000000'}};
  G.drivers={[uids.driver]:{email:'chauffeur1@ptitange.tn',password:'secret123',name:'سائق',payMode:'fixed',salary:500}};
  G.tvs={[uids.tv]:{email:'tv1@ptitange.tn',name:'تلفاز'}};
@@ -36,10 +38,18 @@ const roles=[['admin','musiciendz@gmail.com'],['parent','parent1@ptitange.tn'],[
   
   await p.waitForTimeout(16000);
   const shown=await p.evaluate(()=>['parentApp','driverApp','tvApp','catApp','anApp','anissaApp'].filter(id=>document.getElementById(id)).join(',')||((document.getElementById('home')||{}).classList||{contains:()=>false}).contains('active')&&'admin-home'||'?');
-  const txt=await p.evaluate(()=>document.body.innerText.length); out[role]={shown,txt,denied:[...msgs].filter(m=>!m.startsWith('BLOCKED')).sort()};
+  const txt=await p.evaluate(()=>document.body.innerText.length);   const kids=role==='parent'?await p.evaluate(()=>students.map(s=>s.name).sort().join(',')):'';
+  if(role==='parent'){
+   // تحيين حيّ: الإدارة تبدّل اسم طفل من العائلة، لازم يوصل للوليّ (ما تقصّش الربط)
+   await fetch(DBU+'/GestionPetitAnge/students/1700000000002/name.json?ns='+NS,{method:'PUT',headers:H,body:JSON.stringify('طفل رقم 2 ✓')});
+   await p.waitForTimeout(2500);
+   const live=await p.evaluate(()=>students.some(s=>s.name==='طفل رقم 2 ✓'));
+   if(!live) msgs.add('LIVE تحيين الأطفال ما وصلش للوليّ');
+  } out[role]={shown,txt,kids,denied:[...msgs].filter(m=>!m.startsWith('BLOCKED')).sort()};
   await ctx.close();
  }
  await b.close();
+ if(out.parent && out.parent.kids!=='طفل رقم 0,طفل رقم 1,طفل رقم 2'){ out.parent.denied.push('KIDS '+out.parent.kids); }
  let bad=0; const want={admin:'admin-home',parent:'parentApp',driver:'driverApp',tv:'tvApp',caterer:'catApp',anissa:'anissaApp'};
  for(const k in out){ const ok=out[k].shown===want[k]&&!out[k].denied.length; if(!ok) bad++; console.log((ok?'✅ ':'❌ ')+k.padEnd(8),out[k].shown,out[k].denied.join(' | ')); }
  process.exit(bad?1:0);

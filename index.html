@@ -1894,6 +1894,55 @@ if (!firebase.apps.length) {
 }
 const db = firebase.database();
 
+// قراءة الأطفال: الوليّ يطلب كان أطفال عائلتو (القواعد ترفض أي طلب آخر منّو)، الإدارة و الفريق يقراو الكل.
+// ⚠️ في Firebase 8، كي طلب كامل على students يترفض للوليّ، يتقصّ معاه حتى الطلب المفلتر اللي يخدم.
+// لذا قبل ما نعرفو الدور، studentsRef ترجّع مرجع يستنّى الدور و بعد يربط الطلب الصحيح.
+var _roleReady, _roleReadyResolve;
+function _resetRole(){ _roleReady = new Promise(function(res){ _roleReadyResolve = res; }); }
+_resetRole();
+firebase.auth().onAuthStateChanged(function(u){
+    _resetRole();
+    window._parentFamId = null;
+    if(!u) return;
+    if(u.email === 'musiciendz@gmail.com'){ _roleReadyResolve(); return; }
+    db.ref('GestionPetitAnge/parents/' + u.uid + '/familyId').once('value').then(function(f){
+        if(f.exists()) window._parentFamId = String(f.val() || '');
+    }).catch(function(){}).then(function(){ _roleReadyResolve(); });
+});
+function _studentsRefNow(){
+    var r = db.ref('GestionPetitAnge/students');
+    var fam = window._parentFamId;
+    if(fam !== undefined && fam !== null) return r.orderByChild('familyId').equalTo(String(fam));
+    return r;
+}
+function studentsRef(){
+    var cu = firebase.auth().currentUser;
+    if(cu && (cu.email === 'musiciendz@gmail.com' || (window._parentFamId !== undefined && window._parentFamId !== null))) return _studentsRefNow();
+    var subs = [], ready = _roleReady;
+    return {
+        on: function(ev, cb, cancel){
+            var sub = { ev:ev, cb:cb, real:null, dead:false };
+            subs.push(sub);
+            ready.then(function(){
+                if(sub.dead || !firebase.auth().currentUser) return;
+                sub.real = _studentsRefNow();
+                sub.real.on(ev, cb, cancel);
+            });
+            return cb;
+        },
+        off: function(ev, cb){
+            subs.forEach(function(sub){
+                if((ev && sub.ev !== ev) || (cb && sub.cb !== cb)) return;
+                sub.dead = true;
+                if(sub.real) sub.real.off(sub.ev, sub.cb);
+            });
+        },
+        once: function(ev, cb){
+            return ready.then(function(){ return _studentsRefNow().once(ev, cb); });
+        }
+    };
+}
+
 // متغيرات البيانات العامة
 let students = [];
 let driversList = [];
@@ -1937,7 +1986,7 @@ function loadDataFromFirebase() {
         if(document.getElementById('driversModal')) openDriversModal();
         if(typeof renderTransDrivers === 'function') renderTransDrivers();
     });
-    db.ref('GestionPetitAnge/students').on('value', snap => {
+    studentsRef().on('value', snap => {
         let data = snap.val();
         students = [];
         if (data) {
@@ -5242,14 +5291,22 @@ function showParentApp(info){
     d.style.cssText = 'position:fixed; inset:0; z-index:99998; background:#fdf4f8; overflow:auto; font-family:Cairo,sans-serif; direction:rtl;';
     document.body.appendChild(d);
     var lo = document.getElementById('dataLoadingOverlay'); if(lo) lo.style.display='none';
-    var rS = db.ref('GestionPetitAnge/students');
-    var cS = rS.on('value', function(snap){
+    if(_parentInfo.familyId !== undefined) window._parentFamId = String(_parentInfo.familyId || '');
+    function onKids(snap){
         var data = snap.val(); students = [];
         if(data){ Object.keys(data).forEach(function(k){ var s=data[k]; if(s){ s.firebaseKey=k; students.push(s); } }); }
         _parentLoaded = true;
         if(document.getElementById('parentApp')) renderParentApp();
-    });
-    _parentRefs.push({ref:rS, cb:cS});
+    }
+    /* كان طلب كامل على students يترفض في بلاصة أخرى، Firebase يقصّ معاه حتى هذا الربط: نعاودو نربطو */
+    function listenKids(){
+        var r = studentsRef();
+        r.on('value', onKids, function(){
+            setTimeout(function(){ if(document.getElementById('parentApp') && window.isParentMode) listenKids(); }, 1500);
+        });
+        _parentRefs.push({ref:r, cb:onKids});
+    }
+    listenKids();
     var rT = db.ref('GestionPetitAnge/settings');
     var cT = rT.on('value', function(snap){ var v=snap.val(); if(v) settings=v; if(document.getElementById('parentApp')) renderParentApp(); });
     _parentRefs.push({ref:rT, cb:cT});
@@ -7992,7 +8049,7 @@ function adminLogout(){
     function bind(){
         if(bound) return; bound = true;
         try {
-            db.ref('GestionPetitAnge/students').on('value', function(s){
+            studentsRef().on('value', function(s){
                 var d = s.val(), a = [];
                 if(d) Object.keys(d).forEach(function(k){ var x = d[k]; if(x) a.push(x); });
                 kids = a;
@@ -16218,7 +16275,7 @@ function adminLogout(){
     function forceLoad(){
         try{
             if(typeof students==='undefined' || !students || !students.length){
-                db.ref('GestionPetitAnge/students').once('value').then(function(snap){
+                studentsRef().once('value').then(function(snap){
                     var data=snap.val(); if(!data) return;
                     students=[];
                     Object.keys(data).forEach(function(k){ var s=data[k]; if(s){ s.firebaseKey=k; students.push(s); } });
@@ -18262,7 +18319,7 @@ function adminLogout(){
     function bind(path){
         if(_bound[path]) return;
         try{
-            var r=db.ref('GestionPetitAnge/'+path);
+            var r=(path==='students' && typeof studentsRef==='function') ? studentsRef() : db.ref('GestionPetitAnge/'+path);
             r.on('value', function(){ window.liveRefresh(); }, function(){});
             _bound[path]=r;
         }catch(e){}
@@ -25448,7 +25505,7 @@ function adminLogout(){
             if((app.textContent||'').indexOf('جاري تحميل بيانات طفلك')===-1){ clearInterval(t); return; }
             if(dataReady()) return;   /* الحارس فوق يتكفّل */
             if(++tries>3){ clearInterval(t); return; }
-            db.ref('GestionPetitAnge/students').once('value').then(function(sn){
+            studentsRef().once('value').then(function(sn){
                 var data=sn.val(); if(!data) return;
                 students=[];
                 Object.keys(data).forEach(function(k){ var s=data[k]; if(s){ s.firebaseKey=k; students.push(s); } });
@@ -25556,7 +25613,7 @@ function adminLogout(){
             if(dataReady() && setsReady()){ clearInterval(t); return; }
             if(++tries>3){ clearInterval(t); return; }
             if(!dataReady()){
-                db.ref('GestionPetitAnge/students').once('value').then(function(sn){
+                studentsRef().once('value').then(function(sn){
                     var d=sn.val(); if(!d) return;
                     students=[];
                     Object.keys(d).forEach(function(k){ var s=d[k]; if(s){ s.firebaseKey=k; students.push(s); } });
@@ -27918,7 +27975,7 @@ let isFinanceInitialized = false;
 let lastRenderedMonth = null;
 
 // جلب المدفوعات من Firebase
-db.ref('GestionPetitAnge/students').on('value', () => { var _fs=document.getElementById('finance'); if(_fs && _fs.classList.contains('active')) renderFinance(); });
+studentsRef().on('value', () => { var _fs=document.getElementById('finance'); if(_fs && _fs.classList.contains('active')) renderFinance(); });
 db.ref('GestionPetitAnge/payments').on('value', snap => {
     financePayments = snap.val() || {};
     autoRegisterJuneInsurance(); // ← تسجيل تأمين جوان مرة وحدة
@@ -32644,7 +32701,7 @@ function sendCampaignMsg(phone, name, type) {
     }
     function on(path, fn){
         try{
-            var r = db.ref(P + path);
+            var r = path === 'students' ? studentsRef() : db.ref(P + path);
             var cb = r.on('value', function(s){ try{ fn(s.val()); }catch(e){} },
                 function(err){ console.warn('📺 ربط ' + path + ':', err && err.code); });
             refs.push({ r:r, cb:cb });
@@ -32727,6 +32784,12 @@ function sendCampaignMsg(phone, name, type) {
             isTvAcc = !!(s && s.exists());
         }).catch(function(){
             isTvAcc = false;
+        }).then(function(){
+            /* الوليّ: نعرفو عائلتو قبل الربط، باش studentsRef تطلب كان أطفالو */
+            if(isTvAcc || u.email === ADMIN) return;
+            return db.ref(P + 'parents/' + u.uid + '/familyId').once('value').then(function(f){
+                if(f && f.exists()) window._parentFamId = String(f.val() || '');
+            }).catch(function(){});
         }).then(function(){
             if(curUser !== u) return;
             bindFor(u);
@@ -40665,7 +40728,7 @@ function sendCampaignMsg(phone, name, type) {
     function pull(force){
         if(!force && Date.now() - last < 8000) return;
         last = Date.now();
-        db.ref(P + 'students').once('value').then(function(snap){
+        studentsRef().once('value').then(function(snap){
             var v = snap.val();
             if(!v) return;
             ok = true;
@@ -42096,6 +42159,7 @@ function printAugustList() {
   });
   var ADMIN_EMAIL = 'musiciendz@gmail.com';
   auth.onAuthStateChanged(function(user){
+    window._parentFamId = null;
     if(!user){ scr.style.display='flex'; btn.disabled=false; btn.textContent='دخول'; if(typeof hideDriverApp==='function') hideDriverApp(); if(typeof hideParentApp==='function') hideParentApp(); return; }
     // نخلّيو شاشة الدخول ظاهرة حتى ما نعرفو الدور — باش ما تبانش واجهة الإدارة لمحة
     scr.style.display='flex'; btn.disabled=true; btn.textContent='⏳ جاري التحقق...';
@@ -42151,6 +42215,7 @@ function printAugustList() {
       /* 👨‍👩‍👧 الوليّ */
       if(par && par.exists()){
         var pinfo = par.val() || {}; pinfo.uid = uid;
+        window._parentFamId = String(pinfo.familyId || '');
         if(typeof showParentApp==='function') showParentApp(pinfo);
         _openRole(); return;
       }
@@ -42162,6 +42227,50 @@ function printAugustList() {
       btn.disabled=false; btn.textContent='دخول';
     });
   });
+})();
+</script>
+<script>
+/* ===== 👨‍👩‍👧 فهرس العائلات: باش الوليّ يقرا كان أطفالو =====
+   القواعد تخلّي الوليّ يطلب الأطفال اللي familyId متاعهم = familyId متاع حسابو،
+   و يقرا payments/{id} كان إذا famIndex/{id} = عائلتو.
+   الإدارة تحافظ على الزوز: كل طفل عندو familyId (نص)، و famIndex = {id الطفل: العائلة}. */
+(function(){
+    if(window._famIndexSync) return;
+    window._famIndexSync = true;
+    var P = 'GestionPetitAnge/', ADMIN = 'musiciendz@gmail.com';
+    var ref = null, tmr = null;
+
+    function famOf(s, key){ return String(s.familyId || (s.id != null ? s.id : key)); }
+    function same(a, b){
+        var ka = Object.keys(a), kb = Object.keys(b);
+        return ka.length === kb.length && ka.every(function(k){ return b[k] === a[k]; });
+    }
+    function sync(snap){
+        var all = snap.val() || {}, upd = {}, idx = {};
+        Object.keys(all).forEach(function(key){
+            var s = all[key];
+            if(!s || typeof s !== 'object') return;
+            var fam = famOf(s, key);
+            if(s.familyId !== fam) upd[P + 'students/' + key + '/familyId'] = fam;
+            idx[String(s.id != null ? s.id : key)] = fam;
+        });
+        return db.ref(P + 'famIndex').once('value').then(function(cur){
+            if(!same(cur.val() || {}, idx)) upd[P + 'famIndex'] = idx;
+            if(Object.keys(upd).length) return db.ref().update(upd);
+        });
+    }
+    function onStudents(snap){
+        clearTimeout(tmr);
+        tmr = setTimeout(function(){ sync(snap).catch(function(e){ console.warn('famIndex:', e && (e.code || e.message)); }); }, 1500);
+    }
+    try{
+        firebase.auth().onAuthStateChanged(function(u){
+            if(ref){ ref.off('value', onStudents); ref = null; }
+            if(!u || u.email !== ADMIN) return;
+            ref = db.ref(P + 'students');
+            ref.on('value', onStudents);
+        });
+    }catch(e){}
 })();
 </script>
 </body>
