@@ -6519,7 +6519,7 @@ function adminLogout(){
     };
 
     /* ---------- 2) نافذة السائقين الجديدة ---------- */
-    function esc(v){ return String(v == null ? '' : v).replace(/"/g,'&quot;'); }
+    function esc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     var PAY_LBL = { fixed:'💵 شهري قارّ', child:'👶 بالطفل', day:'📅 باليوم' };
 
     window.openDriversModal = function(){
@@ -13249,6 +13249,7 @@ function adminLogout(){
 
     /* ---------- ⑤ سجلّ الغياب للإدارة (داخل نافذة الأولياء) ---------- */
     window.openAbsLog = function(){
+        function h(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
         db.ref('GestionPetitAnge/absencesLog').once('value').then(function(s){
             var log=s.val()||{};
             var rows=Object.keys(log).map(function(k){ var x=log[k]; x._k=k; return x; })
@@ -13256,11 +13257,11 @@ function adminLogout(){
             var html=rows.length ? rows.map(function(r){
                 return '<div style="background:#fafafa; border:1px solid #eee; border-radius:10px; padding:10px; margin-bottom:8px;">'
                     + '<div style="display:flex; justify-content:space-between; align-items:center;">'
-                    + '<b style="color:#a3175b; font-size:13px;">'+(r.needCert?'🩺 ':'🤒 ')+(r.childName||'طفل')+'</b>'
+                    + '<b style="color:#a3175b; font-size:13px;">'+(r.needCert?'🩺 ':'🤒 ')+h(r.childName||'طفل')+'</b>'
                     + '<span style="font-size:11px; color:#888;">'+(r.createdAt?new Date(r.createdAt).toLocaleDateString('ar-TN'):'')+'</span></div>'
-                    + '<div style="font-size:12px; color:#555; margin-top:4px;">📋 '+(r.reasonType||'')+' — 📅 '+fmtDate(r.from)+' → '+fmtDate(r.to)+' ('+(r.days||daysBetween(r.from,r.to))+' أيام)</div>'
-                    + (r.note?'<div style="font-size:11.5px; color:#888; margin-top:2px;">📝 '+r.note+'</div>':'')
-                    + (r.by?'<div style="font-size:11px; color:#aaa; margin-top:2px;">أعلن: '+r.by+'</div>':'')
+                    + '<div style="font-size:12px; color:#555; margin-top:4px;">📋 '+h(r.reasonType||'')+' — 📅 '+h(fmtDate(r.from))+' → '+h(fmtDate(r.to))+' ('+h(r.days||daysBetween(r.from,r.to))+' أيام)</div>'
+                    + (r.note?'<div style="font-size:11.5px; color:#888; margin-top:2px;">📝 '+h(r.note)+'</div>':'')
+                    + (r.by?'<div style="font-size:11px; color:#aaa; margin-top:2px;">أعلن: '+h(r.by)+'</div>':'')
                     + '</div>';
             }).join('') : '<p style="text-align:center; color:#888; padding:20px;">ما فماش غيابات في السجل</p>';
             var m=document.createElement('div'); m.id='absLogModal';
@@ -15097,7 +15098,7 @@ function adminLogout(){
     window._anissaInfo = null;
 
     /* ── أدوات ───────────────────────────────────────────────── */
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function hhmm(){ var n=new Date(); return pad(n.getHours())+':'+pad(n.getMinutes()); }
@@ -15950,7 +15951,7 @@ function adminLogout(){
     window._patchTopAll = true;
     var SUFFIX='@ptitange.tn';
     var DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
     /* ---------- ① حارس عام: أي نافذة تطلع فوق الكل ---------- */
     var BASE=2147480000;
@@ -16388,7 +16389,7 @@ function adminLogout(){
 
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
 
     /* واش هالعاملة تخدم اليوم؟ */
@@ -16535,7 +16536,7 @@ function adminLogout(){
     if(window._galleryNeeds) return;
     window._galleryNeeds = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
@@ -16832,7 +16833,7 @@ function adminLogout(){
     if(window._anTilesV2) return;
     window._anTilesV2 = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function monthKey(){ var n=new Date(); return n.getFullYear()+'-'+pad(n.getMonth()+1); }
@@ -17216,7 +17217,7 @@ function adminLogout(){
     if(window._parentV3) return;
     window._parentV3 = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmt(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN'); }
@@ -17500,7 +17501,7 @@ function adminLogout(){
     if(window._dailyReport) return;
     window._dailyReport = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmt(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN'); }
@@ -17845,7 +17846,7 @@ function adminLogout(){
     window._inviteSys = true;
 
     var APP_URL = 'https://ptit-ange-admin.web.app';
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
     function waNum(ph){ var c=String(ph||'').replace(/\D/g,''); if(c.length===8) c='216'+c; return c; }
     function inst(){ return S().instName || "روضة الملاك الصغير — Les Petits Anges"; }
@@ -17998,7 +17999,7 @@ function adminLogout(){
     if(window._tvBoards) return;
     window._tvBoards = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
@@ -18390,7 +18391,7 @@ function adminLogout(){
     var MC={breakfast:'#e65100',morning:'#2e7d32',evening:'#5e35b1'};
     var DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmt(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{weekday:'long',day:'numeric',month:'long'}); }
@@ -18624,7 +18625,7 @@ function adminLogout(){
     if(window._pSubs) return;
     window._pSubs = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmt(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN'); }
@@ -18895,7 +18896,7 @@ function adminLogout(){
     if(window._payLedger) return;
     window._payLedger = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function mKey(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1); }
@@ -19194,7 +19195,7 @@ function adminLogout(){
     window._tvAutoLogin = true;
 
     var SUFFIX='@ptitange.tn';
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
 
     /* ── ① الدخول التلقائي من الرابط ──
@@ -19341,7 +19342,7 @@ function adminLogout(){
     var MK=['breakfast','morning','evening'];
     var ML={breakfast:'🥐 الفطور',morning:'🍎 لمجة صباحية',evening:'🌙 لمجة مسائية'};
     var MC={breakfast:'#e65100',morning:'#2e7d32',evening:'#5e35b1'};
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
@@ -19830,7 +19831,7 @@ function adminLogout(){
     if(window._docsNewsFix) return;
     window._docsNewsFix = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
     function stu(){ return (typeof students!=='undefined'?students:[])||[]; }
 
@@ -19959,7 +19960,7 @@ function adminLogout(){
     if(window._satGarde) return;
     window._satGarde = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function mKey(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1); }
@@ -20389,7 +20390,7 @@ function adminLogout(){
     if(window._satLink) return;
     window._satLink = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function mKey(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1); }
@@ -20750,7 +20751,7 @@ function adminLogout(){
     if(window._staffPro) return;
     window._staffPro = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
@@ -21008,7 +21009,7 @@ function adminLogout(){
     if(window._bellKids) return;
     window._bellKids = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmtD(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{weekday:'long',day:'numeric',month:'long'}); }
@@ -21337,7 +21338,7 @@ function adminLogout(){
     if(window._bellV2) return;
     window._bellV2 = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
@@ -21669,7 +21670,7 @@ function adminLogout(){
     if(window._bellPlus) return;
     window._bellPlus = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmtD(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{weekday:'long',day:'numeric',month:'long'}); }
@@ -21987,7 +21988,7 @@ function adminLogout(){
     if(window._driverSteps) return;
     window._driverSteps = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
 
@@ -22126,7 +22127,7 @@ function adminLogout(){
     if(window._payDayShow) return;
     window._payDayShow = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function num(x){ return parseFloat(x)||0; }
@@ -22275,7 +22276,7 @@ function adminLogout(){
     var MC={breakfast:'#e65100',morning:'#2e7d32',evening:'#5e35b1'};
     var DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmtD(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{weekday:'long',day:'numeric',month:'long'}); }
@@ -22573,7 +22574,7 @@ function adminLogout(){
 
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
     /* نمسكو الدوالّ الأساسية مرّة وحدة، بلا تغليف */
     var CORE={};
@@ -22731,7 +22732,7 @@ function adminLogout(){
     if(window._podFrame) return;
     window._podFrame = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
@@ -22829,7 +22830,7 @@ function adminLogout(){
     if(window._navClean) return;
     window._navClean = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
     /* المجموعات: كل وحدة فيها أزرار مترابطة */
     var GROUPS=[
@@ -22993,7 +22994,7 @@ function adminLogout(){
     var MC={breakfast:'#e65100',morning:'#2e7d32',evening:'#5e35b1'};
     var DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmtD(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{weekday:'long',day:'numeric',month:'long'}); }
@@ -23255,7 +23256,7 @@ function adminLogout(){
     var ML={breakfast:'🥐 الفطور',morning:'🍎 لمجة صباحية',evening:'🌙 لمجة مسائية'};
     var MC={breakfast:'#e65100',morning:'#2e7d32',evening:'#5e35b1'};
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmtD(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{weekday:'long',day:'numeric',month:'long'}); }
@@ -23504,7 +23505,7 @@ function adminLogout(){
     if(window._supPanel) return;
     window._supPanel = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmtD(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{weekday:'long',day:'numeric',month:'long'}); }
@@ -23781,7 +23782,7 @@ function adminLogout(){
     if(window._contactPlus) return;
     window._contactPlus = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
@@ -23988,7 +23989,7 @@ function adminLogout(){
     if(window._loginTrack) return;
     window._loginTrack = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function S(){ return (typeof settings!=='undefined'&&settings)||{}; }
@@ -24205,7 +24206,7 @@ function adminLogout(){
     if(window._archiveSys) return;
     window._archiveSys = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmtD(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{day:'numeric',month:'long',year:'numeric'}); }
@@ -24663,7 +24664,7 @@ function adminLogout(){
     if(window._thanksMsg) return;
     window._thanksMsg = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function mLabel(k){ var p=String(k).split('-'); return new Date(+p[0],(+p[1])-1,1).toLocaleDateString('ar-TN',{month:'long',year:'numeric'}); }
@@ -24750,7 +24751,7 @@ function adminLogout(){
         L.push('');
         L.push((G.title||'')+' '+(G.name||'')+'،');
         L.push('');
-        L.push('نشكروكم على خلاص معلوم '+C.w+' '+C.e+' *'+esc(s.name)+'*');
+        L.push('نشكروكم على خلاص معلوم '+C.w+' '+C.e+' *'+(s.name||'')+'*');
         L.push('');
         L.push('━━━━━━━━━━━━━━');
         L.push('✅ *تمّ الخلاص*');
@@ -24917,7 +24918,7 @@ function adminLogout(){
     if(window._payRemind) return;
     window._payRemind = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function mLabel(k){ var p=String(k).split('-'); return new Date(+p[0],(+p[1])-1,1).toLocaleDateString('ar-TN',{month:'long',year:'numeric'}); }
@@ -24964,7 +24965,7 @@ function adminLogout(){
         L.push((G.title||'')+' '+(G.name||'')+'،');
         L.push('');
         L.push('نتمنّاو تكونوا بخير 💐');
-        L.push('نحبّو نذكّروكم بلطف بخصوص معلوم '+C.w+' '+C.e+' *'+esc(s.name)+'*');
+        L.push('نحبّو نذكّروكم بلطف بخصوص معلوم '+C.w+' '+C.e+' *'+(s.name||'')+'*');
         L.push('');
         L.push('━━━━━━━━━━━━━━');
         if(advance>0){
@@ -25633,7 +25634,7 @@ function adminLogout(){
     if(window._salaryPro) return;
     window._salaryPro = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function isoD(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
     function fmtD(iso){ var d=new Date(iso+'T00:00:00'); return isNaN(d)?esc(iso):d.toLocaleDateString('ar-TN',{day:'numeric',month:'long',year:'numeric'}); }
@@ -25863,7 +25864,7 @@ function adminLogout(){
     if(window._salLink) return;
     window._salLink = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x)||0; }
 
     /* زرّ 💰 خلاص في كل كارت موظّف */
@@ -25960,7 +25961,7 @@ function adminLogout(){
     if(window._fix3) return;
     window._fix3 = true;
 
-    function esc(x){ return String(x==null?'':x); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x)||0; }
 
     /* ══ ① نفسخو كروت الجرس اللي فيها undefined ══ */
@@ -31958,7 +31959,7 @@ function sendCampaignMsg(phone, name, type) {
     function has(id){ return !!document.getElementById(id); }
     function pad(n){ return String(n).padStart(2,'0'); }
     function today(){ var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function q(s){ return String(s == null ? '' : s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
@@ -32001,6 +32002,11 @@ function sendCampaignMsg(phone, name, type) {
         }catch(e){}
     }
     function canNotify(){ try{ return ('Notification' in window) && Notification.permission === 'granted' && ('serviceWorker' in navigator); }catch(e){ return false; } }
+    /* نص عادي للإشعارات: نفسخو الوسوم و نرجّعو الرموز (&amp; ...) */
+    function plainText(v){
+        return String(v == null ? '' : v).replace(/<[^>]+>/g,'')
+            .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&');
+    }
     function sysNotify(title, body, tag, count){
         if(!canNotify() || !document.hidden) return;
         try{
@@ -32313,7 +32319,7 @@ function sendCampaignMsg(phone, name, type) {
             var fresh = list.filter(function(x){ return !_lastKeys[x.k]; });
             if(fresh.length){
                 var f = fresh[0];
-                sysNotify('🔔 ' + String(f.title).replace(/<[^>]+>/g,''), String(f.body || '').replace(/<[^>]+>/g,''), 'pta-admin', n);
+                sysNotify('🔔 ' + plainText(f.title), plainText(f.body), 'pta-admin', n);
             }
         }
         _lastKeys = keys;
@@ -32901,7 +32907,7 @@ function sendCampaignMsg(phone, name, type) {
     function pad(n){ return String(n).padStart(2,'0'); }
     function iso(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
     function today(){ return iso(new Date()); }
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function L(k){ return (typeof MEAL_LABELS !== 'undefined' && MEAL_LABELS[k]) || k; }
     function KEYS(){ return (typeof MEAL_KEYS !== 'undefined') ? MEAL_KEYS : ['breakfast','morning','evening']; }
     function price(k){ try{ return mealPrice(k); }catch(e){ return 0; } }
@@ -33334,7 +33340,7 @@ function sendCampaignMsg(phone, name, type) {
     var P = 'GestionPetitAnge/';
     var cap = false, ctx = null;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function kid(id){
         try{ return (students || []).filter(function(x){ return String(x.id) === String(id); })[0] || null; }catch(e){ return null; }
@@ -33571,7 +33577,7 @@ function sendCampaignMsg(phone, name, type) {
     var P = 'GestionPetitAnge/';
     var cap = false, ctx = null, parentsCache = [];
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function pays(){ try{ return (typeof financePayments !== 'undefined' && financePayments) || {}; }catch(e){ return {}; } }
@@ -33884,7 +33890,7 @@ function sendCampaignMsg(phone, name, type) {
     var P = 'GestionPetitAnge/';
     var ctx = null, parentsCache = [], wins = [];
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function pays(){ try{ return (typeof financePayments !== 'undefined' && financePayments) || {}; }catch(e){ return {}; } }
@@ -34273,7 +34279,7 @@ function sendCampaignMsg(phone, name, type) {
     var WD = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     var ORD = { 1:'الأوّل', 2:'الثاني', 3:'الثالث', 4:'الرابع', 5:'الأخير' };
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function pays(){ try{ return (typeof financePayments !== 'undefined' && financePayments) || {}; }catch(e){ return {}; } }
@@ -34746,7 +34752,7 @@ function sendCampaignMsg(phone, name, type) {
     var SEND_HOUR = 14;               /* وقت الإرسال: 2 مساء */
     var posters = {};                 /* صور الأفيشات */
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -35019,7 +35025,7 @@ function sendCampaignMsg(phone, name, type) {
     var SEND_HOUR = 14;
     var posters = {}, shown = {}, lastSig = '';
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -35464,7 +35470,7 @@ function sendCampaignMsg(phone, name, type) {
     var MONTHS = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     var feedDay = '', tvN = 0;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function stf(){ try{ return (typeof staff !== 'undefined' && staff) || []; }catch(e){ return []; } }
@@ -35715,7 +35721,7 @@ function sendCampaignMsg(phone, name, type) {
     var MC = { breakfast:'#b78103', morning:'#2e7d32', evening:'#6a1b9a' };
     var DAYS = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function orders(){ try{ return (typeof mealOrders !== 'undefined' && mealOrders) || {}; }catch(e){ return {}; } }
@@ -35944,7 +35950,7 @@ function sendCampaignMsg(phone, name, type) {
     var LBL  = { go:'ذهاب برك', back:'إياب برك', both:'ذهاب و إياب' };
     var NEXT = { '':'go', go:'back', back:'both', both:'' };
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function days(){ try{ return (typeof WT_DAYS !== 'undefined') ? WT_DAYS : []; }catch(e){ return []; } }
@@ -36248,7 +36254,7 @@ function sendCampaignMsg(phone, name, type) {
     var ICON = { go:'🚗', back:'🏠', both:'🔄' };
     var LBL  = { go:'ذهاب برك', back:'إياب برك', both:'ذهاب و إياب' };
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function days(){ try{ return (typeof WT_DAYS !== 'undefined') ? WT_DAYS : []; }catch(e){ return []; } }
@@ -36484,7 +36490,7 @@ function sendCampaignMsg(phone, name, type) {
     var ICON = { go:'🚗', back:'🏠', both:'🔄' };
     var LBL  = { go:'ذهاب', back:'إياب', both:'ذهاب و إياب' };
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function days(){ try{ return (typeof WT_DAYS !== 'undefined') ? WT_DAYS : []; }catch(e){ return []; } }
@@ -36779,7 +36785,7 @@ function sendCampaignMsg(phone, name, type) {
     var P = 'GestionPetitAnge/';
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function pays(){ try{ return (typeof financePayments !== 'undefined' && financePayments) || {}; }catch(e){ return {}; } }
@@ -37126,7 +37132,7 @@ function sendCampaignMsg(phone, name, type) {
 
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -37293,7 +37299,7 @@ function sendCampaignMsg(phone, name, type) {
     if(window._stmtSumV2) return;
     window._stmtSumV2 = true;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -37473,7 +37479,7 @@ function sendCampaignMsg(phone, name, type) {
     var ML = { breakfast:'🥐 فطور', morning:'🍎 لمجة صباحية', evening:'🌙 لمجة مسائية' };
     var skip = {}, pend = null;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -37753,7 +37759,7 @@ function sendCampaignMsg(phone, name, type) {
     var ML = { breakfast:'🥐 فطور', morning:'🍎 لمجة صباحية', evening:'🌙 لمجة مسائية' };
     var pend = null;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -38081,7 +38087,7 @@ function sendCampaignMsg(phone, name, type) {
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     var busy = 0;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -38317,7 +38323,7 @@ function sendCampaignMsg(phone, name, type) {
     var ML = { breakfast:'🥐 فطور', morning:'🍎 لمجة صباحية', evening:'🌙 لمجة مسائية' };
     var pend = null, keep = null;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -38556,7 +38562,7 @@ function sendCampaignMsg(phone, name, type) {
     if(window._finSearchV1) return;
     window._finSearchV1 = true;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function norm(x){
         var t = String(x == null ? '' : x);
         try{ if(typeof normArabic === 'function') return normArabic(t); }catch(e){}
@@ -38690,7 +38696,7 @@ function sendCampaignMsg(phone, name, type) {
 
     var P = 'GestionPetitAnge/';
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -38899,7 +38905,7 @@ function sendCampaignMsg(phone, name, type) {
     var P = 'GestionPetitAnge/';
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -39102,7 +39108,7 @@ function sendCampaignMsg(phone, name, type) {
 
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function kid(id){ return stu().filter(function(x){ return String(x.id) === String(id); })[0] || null; }
     function regList(s){
@@ -39297,7 +39303,7 @@ function sendCampaignMsg(phone, name, type) {
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     var curId = null;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -39578,7 +39584,7 @@ function sendCampaignMsg(phone, name, type) {
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     var curId = null, data = null, stamp = '';
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -39786,7 +39792,7 @@ function sendCampaignMsg(phone, name, type) {
     var ML = { breakfast:'فطور', morning:'لمجة صباحية', evening:'لمجة مسائية' };
     var ctx = null;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -40021,7 +40027,7 @@ function sendCampaignMsg(phone, name, type) {
 
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -40248,7 +40254,7 @@ function sendCampaignMsg(phone, name, type) {
 
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -40758,7 +40764,7 @@ function sendCampaignMsg(phone, name, type) {
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     var found = null;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function pad(n){ return String(n).padStart(2, '0'); }
@@ -40970,7 +40976,7 @@ function sendCampaignMsg(phone, name, type) {
     var MON = ['جانفي','فيفري','مارس','أفريل','ماي','جوان','جويلية','أوت','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     var found = null;
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function fmt(x){ return (Math.round(num(x) * 10) / 10).toString(); }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
@@ -41211,7 +41217,7 @@ function sendCampaignMsg(phone, name, type) {
 
     var P = 'GestionPetitAnge/';
 
-    function esc(x){ return String(x == null ? '' : x).replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+    function esc(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     function num(x){ return parseFloat(x) || 0; }
     function stu(){ try{ return (typeof students !== 'undefined' && students) || []; }catch(e){ return []; } }
     function S(){ try{ return (typeof settings !== 'undefined' && settings) || {}; }catch(e){ return {}; } }
@@ -41639,17 +41645,6 @@ function openEncourageModal(id) {
 
 
 
-// 🚫 وسم الطفل "رفض التمديد لأوت" (قرار نهائي)
-function markAugustDeclined(id) {
-    let s = summerClubStudents.find(x => x.id === id);
-    if(!s) return;
-    db.ref('GestionPetitAnge/summerClub/' + id).update({ augustDeclined: true }).then(() => {
-        let modal = document.getElementById('encourageModal');
-        if(modal) modal.remove();
-        showAlert('تم التسجيل', `✅ ${s.name} — لن تظهر له تذكيرات النادي الصيفي مجدداً`, '🚫');
-        renderSummerList();
-    });
-}
 // ═══════════════════════════════════════════════
 // 🚫 إخفاء زر التشجيع للأطفال اللي رفضوا (يخدم وحدو)
 // ═══════════════════════════════════════════════
