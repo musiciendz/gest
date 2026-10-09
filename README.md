@@ -12,8 +12,11 @@
 - سجلّات الحسابات (فيها كلمات السر) كل واحد يقرا سجلّو برك.
 - `loginIndex` يتقرا قبل الدخول، فيه كان hash الإيميل و الدور.
 
-## ملفات ناقصة من الريبو
-`index.html` يستعمل `manifest.json` و`icon-192.png` و`apple-touch-icon.png` و`audio/list.json`، وهاذم موش موجودين هنا. لازم يتزادو قبل أي نشر من الريبو، وإلا يتفسخو من الموقع.
+## ملفات الصوت (موش في الريبو)
+`audio/list.json` في الريبو، أما ملفات mp3 لا (GitHub يرفض أي ملف فوق 100MB، و `audio/fairouz/01.mp3` حجمو 162MB). قبل `firebase deploy --only hosting` حطّهم في بلايصهم:
+`audio/fairouz/01.mp3`، `audio/kids/01.mp3`، `audio/tarab/01.mp3`. سور القرآن تتقرا من رابط خارجي.
+
+`manifest.json` يذكر `icon-512.png` و `icon-512-maskable.png` وهاذوما موش موجودين.
 
 ## الاختبارات
 ```
