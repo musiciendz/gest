@@ -1,0 +1,43 @@
+# إدارة روضة P'tit Ange
+
+تطبيقة ويب (ملف واحد `index.html`) لإدارة الروضة: الأطفال، الخلاص، الفريق، النقل، المطبخ، وبوابات الأولياء والسواق والتلفاز والأنيسات.
+
+- **المعطيات:** Firebase Realtime Database (مشروع `ptit-ange-admin`)، كل شي تحت `GestionPetitAnge/`.
+- **الدخول:** Firebase Auth. المدير معرّف بالإيميل، والأدوار الأخرى حسب العقدة اللي فيها الـ uid (`parents`، `drivers`، `tvs`، `caterers`، `anissas`).
+- **النشر:** `firebase deploy --only hosting` للموقع، و `firebase deploy --only database` للقواعد (الملفات في `tests/` و `rules/` ما تتنشرش).
+
+## قواعد الداتابيز
+`database.rules.json` يتولّد من `rules/build-rules.js` (القواعد ما فيهاش دوال، لذا الشروط مكتوبة مرّة وحدة في السكريبت). بعد أي تبديل: `node rules/build-rules.js`.
+- حساب Firebase Auth ما عندوش سجلّ دور (`parents`، `drivers`، `tvs`، `caterers`، `anissas`) ما يقرا و ما يكتب شي، حتى لو عمل حساب بروحو.
+- سجلّات الحسابات (فيها كلمات السر) كل واحد يقرا سجلّو برك.
+- `loginIndex` يتقرا قبل الدخول، فيه كان hash الإيميل و الدور.
+- الوليّ يقرا كان أطفال عائلتو: يطلب `students` بـ `orderByChild('familyId').equalTo(عائلتو)` (الدالة `studentsRef()` في `index.html`)، و `payments/{id}` كان إذا `famIndex/{id}` = عائلتو. المدير يحافظ أوتوماتيك على `familyId` (نص) لكل طفل و على `famIndex` كل ما يتبدّل طفل.
+- ⚠️ في Firebase 8، أي طلب كامل على `students` من وليّ يترفض و يقصّ معاه حتى الطلب المفلتر. أي قراءة جديدة للأطفال لازم تمرّ بـ `studentsRef()`.
+
+### ترتيب النشر
+1. انشر `index.html` الجديد.
+2. ادخل بحساب الإدارة مرّة (يكتب `familyId` و `famIndex`).
+3. من بعد انشر القواعد.
+
+## ملفات الصوت (موش في الريبو)
+`audio/list.json` في الريبو، أما ملفات mp3 لا (GitHub يرفض أي ملف فوق 100MB، و `audio/fairouz/01.mp3` حجمو 162MB). قبل `firebase deploy --only hosting` حطّهم في بلايصهم:
+`audio/fairouz/01.mp3`، `audio/kids/01.mp3`، `audio/tarab/01.mp3`. سور القرآن تتقرا من رابط خارجي.
+
+`manifest.json` يذكر `icon-512.png` و `icon-512-maskable.png` وهاذوما موش موجودين.
+
+## الاختبارات
+```
+npm i playwright && npx playwright install chromium
+node tests/xss-check.js
+```
+يحلّ التطبيقة بـ Firebase وهمي (`tests/fake-firebase.js`) ويثبّت إلّي النص اللي يكتبو الأولياء ما يتنفّذش كـ كود في شاشات الإدارة.
+
+القواعد (يلزم Java):
+```
+npm i firebase-tools @firebase/rules-unit-testing firebase playwright
+npm i --prefix /tmp/fb8 firebase@8.10.1
+FIREBASE8_DIR=/tmp/fb8/node_modules/firebase npx firebase emulators:exec --only database \
+  "node rules/rules.test.js && node tests/roles-check.js"
+```
+- `rules/rules.test.js`: 33 حالة (شكون يقرا/يكتب شنوّة).
+- `tests/roles-check.js`: يحلّ التطبيقة بالأدوار الستة على القواعد و يثبّت إلّي كل دور يوصل لواجهتو بلا حتى رفض.

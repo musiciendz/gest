@@ -1,0 +1,50 @@
+{
+ "quran": [
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/78.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/79.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/80.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/81.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/82.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/83.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/84.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/85.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/86.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/87.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/88.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/89.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/90.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/91.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/92.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/93.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/94.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/95.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/96.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/97.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/98.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/99.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/100.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/101.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/102.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/103.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/104.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/105.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/106.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/107.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/108.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/109.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/110.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/111.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/112.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/113.mp3",
+  "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/114.mp3"
+ ],
+ "fairouz": [
+  "audio/fairouz/01.mp3"
+ ],
+ "kids": [
+  "audio/kids/01.mp3"
+ ],
+ "tarab": [
+  "audio/tarab/01.mp3"
+ ]
+}

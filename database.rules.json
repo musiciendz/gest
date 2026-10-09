@@ -1,0 +1,182 @@
+{
+  "rules": {
+    "GestionPetitAnge": {
+      ".read": "auth != null && auth.token.email === 'musiciendz@gmail.com'",
+      ".write": "auth != null && auth.token.email === 'musiciendz@gmail.com'",
+      "students": {
+        ".read": "(auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())) || (auth != null && root.child('GestionPetitAnge/parents/' + auth.uid).exists() && query.orderByChild === 'familyId' && query.equalTo === root.child('GestionPetitAnge/parents/' + auth.uid + '/familyId').val())",
+        ".indexOn": [
+          "familyId"
+        ],
+        "$sid": {
+          ".read": "auth != null && root.child('GestionPetitAnge/parents/' + auth.uid).exists() && data.child('familyId').val() === root.child('GestionPetitAnge/parents/' + auth.uid + '/familyId').val()",
+          "rulesAck": {
+            ".write": "(auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())) || (auth != null && root.child('GestionPetitAnge/parents/' + auth.uid).exists() && data.parent().child('familyId').val() === root.child('GestionPetitAnge/parents/' + auth.uid + '/familyId').val())"
+          },
+          "docs": {
+            ".write": "(auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())) || (auth != null && root.child('GestionPetitAnge/parents/' + auth.uid).exists() && data.parent().child('familyId').val() === root.child('GestionPetitAnge/parents/' + auth.uid + '/familyId').val())"
+          }
+        }
+      },
+      "settings": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "mealMenu": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "payments": {
+        "$sid": {
+          ".read": "(auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())) || (auth != null && root.child('GestionPetitAnge/parents/' + auth.uid).exists() && root.child('GestionPetitAnge/famIndex/' + $sid).val() === root.child('GestionPetitAnge/parents/' + auth.uid + '/familyId').val())"
+        }
+      },
+      "loginIndex": {
+        ".read": true
+      },
+      "gallery": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "monthlyNeeds": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "photoOfDay": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "toolRequests": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "appointments": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "dailyReports": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "transWeekly": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "medications": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "medicationsArchive": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "teamMessages": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "attendance": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "medicationsLog": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "satBookings": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "extras": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "medDoses": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "adminNotifs": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "absences": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "absencesArchive": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "absencesLog": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "parentNotifs": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "parentLogins": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "workShifts": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "punch": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "mealPrep": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "catPayments": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "mealProposals": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "mealOrders": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "tvBoards": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "photos": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "transportLog": {
+        ".read": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())",
+        ".write": "auth != null && (auth.token.email === 'musiciendz@gmail.com' || root.child('GestionPetitAnge/parents/' + auth.uid).exists() || root.child('GestionPetitAnge/drivers/' + auth.uid).exists() || root.child('GestionPetitAnge/tvs/' + auth.uid).exists() || root.child('GestionPetitAnge/caterers/' + auth.uid).exists() || root.child('GestionPetitAnge/anissas/' + auth.uid).exists())"
+      },
+      "parents": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid"
+        }
+      },
+      "drivers": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid"
+        }
+      },
+      "tvs": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid"
+        }
+      },
+      "caterers": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid"
+        }
+      },
+      "anissas": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid"
+        }
+      }
+    }
+  }
+}
