@@ -6366,6 +6366,9 @@ function adminLogout(){
     }
     // 1) نعاودو نشبكو على السائقين بعد ما يتأكّد الدخول
     function attach(){
+        /* قائمة السائقين (فيها كلمات السر) للإدارة برك: القواعد تمنعها على الأدوار الأخرى */
+        var cu = firebase.auth().currentUser;
+        if(!cu || cu.email !== 'musiciendz@gmail.com') return;
         try {
             db.ref('GestionPetitAnge/drivers').on('value', function(snap){
                 fill(snap);
@@ -16104,7 +16107,18 @@ function adminLogout(){
 
     /* ---------- ③ توجيه ذكي: نعرفو الدور من اسم الدخول ---------- */
     function anKey(e){ return String(e||'').toLowerCase().replace(/[.#$/\[\]]/g,'_'); }
+    /* مفتاح الفهرس = hash متاع الإيميل، باش الفهرس (اللي يتقرا قبل الدخول) ما يكشفش الإيميلات */
+    function idxKey(e){
+        e=String(e||'').trim().toLowerCase();
+        try{
+            return crypto.subtle.digest('SHA-256', new TextEncoder().encode('pta:'+e)).then(function(b){
+                return 'h'+Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0'+x.toString(16)).slice(-2); }).join('').slice(0,32);
+            });
+        }catch(_){ return Promise.resolve(anKey(e)); }
+    }
+    function escH(x){ return String(x == null ? '' : x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
     window._roleHint='';
+    var _detectSeq=0;
     function detectRole(){
         var el=document.getElementById('loginEmail'); if(!el) return;
         var raw=(el.value||'').trim().toLowerCase();
@@ -16120,20 +16134,24 @@ function adminLogout(){
             window._roleHint='admin'; return;
         }
         var email=(raw.indexOf('@')!==-1)?raw:(raw+SUFFIX);
+        var seq=++_detectSeq;
+        idxKey(email).then(function(k){
+        if(seq!==_detectSeq) return;
         var idx=window._loginIndex||{};
-        var hit=idx[anKey(email)]||idx[email];
+        var hit=idx[k]||idx[anKey(email)];
         if(hit){
             var M={ parent:['👨‍👩‍👧 وليّ','#8e24aa','#f3e5f5'], driver:['🚌 سائق','#1565c0','#e3f2fd'],
                     caterer:['🍳 المطبخ','#e65100','#fff3e0'], anissa:['👩‍🏫 أنيسة','#5e35b1','#ede7f6'],
                     supervisor:['👑 المسؤولة','#00695c','#e0f2f1'], cleaner:['🧹 منظفة','#00897b','#e0f2f1'],
                     tv:['📺 شاشة','#455a64','#eceff1'] };
             var m=M[hit.role]||['👤 حساب','#666','#f5f5f5'];
-            chip.innerHTML='<span style="background:'+m[2]+'; color:'+m[1]+'; border-radius:20px; padding:5px 14px;">'+m[0]+(hit.name?(' — '+hit.name):'')+'</span>';
+            chip.innerHTML='<span style="background:'+m[2]+'; color:'+m[1]+'; border-radius:20px; padding:5px 14px;">'+m[0]+(hit.name?(' — '+escH(hit.name)):'')+'</span>';
             window._roleHint=hit.role;
         } else {
             chip.innerHTML='<span style="color:#bba9b3; font-size:11.5px;">اكتب اسم الدخول...</span>';
             window._roleHint='';
         }
+        });
     }
     function bindDetect(){
         var el=document.getElementById('loginEmail'); if(!el || el._roleBound) return;
@@ -16157,14 +16175,18 @@ function adminLogout(){
                 var v=(snap&&snap.val())||{};
                 Object.keys(v).forEach(function(uid){
                     var a=v[uid]||{}; if(!a.email) return;
-                    idx[String(a.email).toLowerCase()]={ role:(a.role||role), name:a.name||'' };
+                    idx[String(a.email).toLowerCase()]={ role:(a.role||role) };
                 });
             }
             add(r[0],'parent'); add(r[1],'driver'); add(r[2],'caterer'); add(r[3],'anissa'); add(r[4],'tv');
-            var safe={};
-            Object.keys(idx).forEach(function(k){ safe[anKey(k)]=idx[k]; });
-            db.ref('GestionPetitAnge/loginIndex').set(safe).catch(function(){});
-        });
+            /* الفهرس يتقرا قبل الدخول: نخزّنو كان hash الإيميل و الدور، بلا إيميلات و بلا أسماء */
+            var emails=Object.keys(idx);
+            return Promise.all(emails.map(idxKey)).then(function(keys){
+                var safe={};
+                keys.forEach(function(k,i){ safe[k]=idx[emails[i]]; });
+                return db.ref('GestionPetitAnge/loginIndex').set(safe);
+            });
+        }).catch(function(){});
     }
     try{
         db.ref('GestionPetitAnge/loginIndex').on('value', function(s){ window._loginIndex=s.val()||{}; detectRole(); }, function(){});
