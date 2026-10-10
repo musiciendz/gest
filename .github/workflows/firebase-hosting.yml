@@ -1,0 +1,92 @@
+# Deploys the site to Firebase Hosting (project ptit-ange-admin).
+# - push to main         -> live site
+# - pull request          -> temporary preview URL (7 days), live site untouched
+# - manual run            -> live site from main; checks only on any other branch
+# Only Hosting is deployed. Database rules are never deployed from here (they are applied by hand, after the code).
+name: Firebase Hosting
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: firebase-hosting-${{ github.event_name == 'pull_request' && github.event.pull_request.number || 'live' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  deploy:
+    # Pull requests from forks get no secrets, so they are skipped.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      MODE: ${{ github.event_name == 'pull_request' && 'preview' || 'live' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # The mp3s are too big for git (fairouz is 162MB). They live as assets of the GitHub release
+      # "audio-files", named <folder>-<file>, e.g. fairouz-01.mp3 -> audio/fairouz/01.mp3.
+      - name: Download audio files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view audio-files --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "::warning::No 'audio-files' release in this repository, so no mp3 was downloaded."
+            exit 0
+          fi
+          dl="$RUNNER_TEMP/audio"
+          mkdir -p "$dl"
+          gh release download audio-files --repo "$GITHUB_REPOSITORY" --pattern '*.mp3' --dir "$dl"
+          for f in "$dl"/*.mp3; do
+            name=$(basename "$f")
+            mkdir -p "audio/${name%%-*}"
+            mv "$f" "audio/${name%%-*}/${name#*-}"
+            echo "audio/${name%%-*}/${name#*-}"
+          done
+
+      - name: Check site files and config
+        run: node .github/scripts/check-hosting.js "$MODE"
+
+      - name: XSS regression test
+        if: hashFiles('tests/xss-check.js') != ''
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+          node tests/xss-check.js
+
+      - name: Check the Firebase secret is configured
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PTIT_ANGE_ADMIN }}
+        run: |
+          if [ -z "$SA" ]; then
+            echo "::error::Add the repository secret FIREBASE_SERVICE_ACCOUNT_PTIT_ANGE_ADMIN (service account JSON) before deploying."
+            exit 1
+          fi
+
+      - name: Deploy preview
+        if: github.event_name == 'pull_request'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PTIT_ANGE_ADMIN }}
+          projectId: ptit-ange-admin
+          expires: 7d
+
+      - name: Deploy live site
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PTIT_ANGE_ADMIN }}
+          projectId: ptit-ange-admin
+          channelId: live
